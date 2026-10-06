@@ -2,7 +2,7 @@
 /**
  * Odynasties production/local configuration.
  *
- * Render: set DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS as environment variables.
+ * Render: set DATABASE_URL (or DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD) as environment variables.
  * Local XAMPP: the defaults below continue to work with MySQL root/no password.
  */
 function envv($key, $default = '') {
@@ -51,11 +51,27 @@ function start_role_session($role){
 }
 start_role_session(ody_request_role());
 
-$host = envv('DB_HOST', '127.0.0.1');
-$port = envv('DB_PORT', '3306');
-$db   = envv('DB_NAME', 'odynasties');
-$user = envv('DB_USER', 'root');
-$pass = envv('DB_PASS', '');
+// --- DATABASE CONNECTIVITY LOGIC ---
+$dbUrl = getenv('DATABASE_URL');
+
+if ($dbUrl) {
+  // If DATABASE_URL is present on Render, parse out the credentials
+  $dbParts = parse_url($dbUrl);
+  $host = $dbParts['host'] ?? '127.0.0.1';
+  $port = $dbParts['port'] ?? '3306';
+  $user = $dbParts['user'] ?? 'root';
+  $pass = $dbParts['pass'] ?? '';
+  $db   = isset($dbParts['path']) ? ltrim($dbParts['path'], '/') : 'odynasties';
+} else {
+  // Fallback to separate configuration items for local XAMPP and fallback environment setups
+  $host = envv('DB_HOST', '127.0.0.1');
+  $port = envv('DB_PORT', '3306');
+  $db   = envv('DB_NAME', 'odynasties');
+  $user = envv('DB_USER', 'root');
+  // Grabs either DB_PASS or DB_PASSWORD seamlessly to prevent credential configuration typos
+  $pass = envv('DB_PASS', envv('DB_PASSWORD', ''));
+}
+
 $donation_mpesa_number = envv('DONATION_MPESA_NUMBER', '');
 
 try {
