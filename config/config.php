@@ -5,16 +5,57 @@
  * Render: set DATABASE_URL (or DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD) as environment variables.
  * Local XAMPP: the defaults below continue to work with MySQL root/no password.
  */
+
+// 1. FORCED DATABASE ENVIRONMENT PARSER (Must run first)
+$dbUrl = $_ENV['DATABASE_URL'] ?? $_SERVER['DATABASE_URL'] ?? getenv('DATABASE_URL');
+
+if (!empty($dbUrl)) {
+  $dbParts = parse_url($dbUrl);
+  $host = $dbParts['host'] ?? '127.0.0.1';
+  $port = $dbParts['port'] ?? '3306';
+  $user = $dbParts['user'] ?? 'root';
+  $pass = $dbParts['pass'] ?? '';
+  $db   = isset($dbParts['path']) ? ltrim($dbParts['path'], '/') : 'odynasties';
+} else {
+  // Graceful fallback to separate environment variables or local defaults
+  $host = $_ENV['DB_HOST'] ?? $_SERVER['DB_HOST'] ?? getenv('DB_HOST') ?: '127.0.0.1';
+  $port = $_ENV['DB_PORT'] ?? $_SERVER['DB_PORT'] ?? getenv('DB_PORT') ?: '3306';
+  $db   = $_ENV['DB_NAME'] ?? $_SERVER['DB_NAME'] ?? getenv('DB_NAME') ?: 'odynasties';
+  $user = $_ENV['DB_USER'] ?? $_SERVER['DB_USER'] ?? getenv('DB_USER') ?: 'root';
+  $pass = $_ENV['DB_PASS'] ?? $_ENV['DB_PASSWORD'] ?? $_SERVER['DB_PASS'] ?? $_SERVER['DB_PASSWORD'] ?? getenv('DB_PASS') ?? getenv('DB_PASSWORD') ?: '';
+}
+
+// Helper tracking utility function for custom configuration keys
 function envv($key, $default = '') {
-  // Checks superglobal arrays first, falling back to getenv() for reliable cloud tracking
   $value = $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key);
   return ($value === false || $value === '') ? $default : $value;
 }
 
+$donation_mpesa_number = envv('DONATION_MPESA_NUMBER', '');
+
+// 2. CONNECT PDO INSTANCE IMMEDIATELY
+try {
+  $pdo = new PDO(
+    "mysql:host={$host};port={$port};dbname={$db};charset=utf8mb4",
+    $user,
+    $pass,
+    [
+      PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,
+      PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC,
+      PDO::ATTR_EMULATE_PREPARES=>false
+    ]
+  );
+} catch (PDOException $e) {
+  error_log('Odynasties database connection failed: '.$e->getMessage());
+  http_response_code(500);
+  die('Database connection failed. Check the DB_* environment variables and make sure the database schema has been imported.');
+}
+
+// 3. CORE FRAMEWORK UTILITIES AND ROUTING
 $requestPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $basePath = rtrim(envv('APP_BASE_PATH', ''), '/');
 if ($basePath === '' && preg_match('#^/odynasties(?:/|$)#', $requestPath)) {
-  $basePath = '/odynasties'; // backward compatibility with XAMPP
+  $basePath = '/odynasties'; 
 }
 define('APP_BASE_PATH', $basePath);
 
@@ -51,45 +92,6 @@ function start_role_session($role){
   session_start();
 }
 start_role_session(ody_request_role());
-
-// --- FORCED DATABASE CONNECTIVITY LOGIC ---
-$dbUrl = $_ENV['DATABASE_URL'] ?? $_SERVER['DATABASE_URL'] ?? getenv('DATABASE_URL');
-
-if (!empty($dbUrl)) {
-  // If DATABASE_URL is present on Render, parse out the credentials
-  $dbParts = parse_url($dbUrl);
-  $host = $dbParts['host'] ?? '127.0.0.1';
-  $port = $dbParts['port'] ?? '3306';
-  $user = $dbParts['user'] ?? 'root';
-  $pass = $dbParts['pass'] ?? '';
-  $db   = isset($dbParts['path']) ? ltrim($dbParts['path'], '/') : 'odynasties';
-} else {
-  // Fallback to separate configuration arrays for local XAMPP and backup variables
-  $host = envv('DB_HOST', '127.0.0.1');
-  $port = envv('DB_PORT', '3306');
-  $db   = envv('DB_NAME', 'odynasties');
-  $user = envv('DB_USER', 'root');
-  $pass = envv('DB_PASS', envv('DB_PASSWORD', ''));
-}
-
-$donation_mpesa_number = envv('DONATION_MPESA_NUMBER', '');
-
-try {
-  $pdo = new PDO(
-    "mysql:host={$host};port={$port};dbname={$db};charset=utf8mb4",
-    $user,
-    $pass,
-    [
-      PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,
-      PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC,
-      PDO::ATTR_EMULATE_PREPARES=>false
-    ]
-  );
-} catch (PDOException $e) {
-  error_log('Odynasties database connection failed: '.$e->getMessage());
-  http_response_code(500);
-  die('Database connection failed. Check the DB_* environment variables and make sure the database schema has been imported.');
-}
 
 function e($v){return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');}
 function is_admin(){
