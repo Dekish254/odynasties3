@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: odynasties
+    runtime: docker
+    healthCheckPath: /health.php
+    envVars:
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "3306"
+      - key: DB_NAME
+        value: odynasties
+      - key: DB_USER
+        sync: false
+      - key: DB_PASS
+        sync: false
+      - key: DONATION_MPESA_NUMBER
+        sync: false
+      - key: ADMIN_SETUP_TOKEN
+        sync: false
