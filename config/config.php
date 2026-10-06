@@ -6,7 +6,8 @@
  * Local XAMPP: the defaults below continue to work with MySQL root/no password.
  */
 function envv($key, $default = '') {
-  $value = getenv($key);
+  // Checks superglobal arrays first, falling back to getenv() for reliable cloud tracking
+  $value = $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key);
   return ($value === false || $value === '') ? $default : $value;
 }
 
@@ -51,10 +52,10 @@ function start_role_session($role){
 }
 start_role_session(ody_request_role());
 
-// --- DATABASE CONNECTIVITY LOGIC ---
-$dbUrl = getenv('DATABASE_URL');
+// --- FORCED DATABASE CONNECTIVITY LOGIC ---
+$dbUrl = $_ENV['DATABASE_URL'] ?? $_SERVER['DATABASE_URL'] ?? getenv('DATABASE_URL');
 
-if ($dbUrl) {
+if (!empty($dbUrl)) {
   // If DATABASE_URL is present on Render, parse out the credentials
   $dbParts = parse_url($dbUrl);
   $host = $dbParts['host'] ?? '127.0.0.1';
@@ -63,12 +64,11 @@ if ($dbUrl) {
   $pass = $dbParts['pass'] ?? '';
   $db   = isset($dbParts['path']) ? ltrim($dbParts['path'], '/') : 'odynasties';
 } else {
-  // Fallback to separate configuration items for local XAMPP and fallback environment setups
+  // Fallback to separate configuration arrays for local XAMPP and backup variables
   $host = envv('DB_HOST', '127.0.0.1');
   $port = envv('DB_PORT', '3306');
   $db   = envv('DB_NAME', 'odynasties');
   $user = envv('DB_USER', 'root');
-  // Grabs either DB_PASS or DB_PASSWORD seamlessly to prevent credential configuration typos
   $pass = envv('DB_PASS', envv('DB_PASSWORD', ''));
 }
 
