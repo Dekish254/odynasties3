@@ -53,7 +53,7 @@ function start_role_session($role){
 start_role_session(ody_request_role());
 
 // --- FORCED DATABASE CONNECTIVITY LOGIC ---
-$db = getenv('DB_NAME') ?: (getenv('DB_DATABASE') ?: 'railway');
+$dbUrl = $_ENV['DATABASE_URL'] ?? $_SERVER['DATABASE_URL'] ?? getenv('DATABASE_URL');
 
 if (!empty($dbUrl)) {
   // If DATABASE_URL is present on Render, parse out the credentials
