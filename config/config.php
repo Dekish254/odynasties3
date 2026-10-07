@@ -73,7 +73,8 @@ $pass = getenv('DB_PASS') ?: (getenv('DB_PASSWORD') ?: 'OGPjARzHlyssppysTWVWvrsY
 
 }
 
-$donation_mpesa_number = envv('DONATION_MPESA_NUMBER', '');
+$donation_mpesa_number = envv('DONATION_MPESA_NUMBER', '0795813885');
+
 
 try {
   $pdo = new PDO(
