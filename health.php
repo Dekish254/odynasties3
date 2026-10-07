@@ -2,7 +2,7 @@
 header('Content-Type: text/plain; charset=utf-8');
 try {
   $host = getenv('DB_HOST');
-  $port = getenv('DB_PORT') ?: '3306';
+  $port = getenv('DB_PORT') ?: '33553';
   $db   = getenv('DB_NAME');
   $user = getenv('DB_USER');
   $pass = getenv('DB_PASS');
