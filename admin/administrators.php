@@ -150,10 +150,8 @@ require '../includes/header.php';
         <td class="actions-cell">
           <?php if (!$isMe): ?>
               <?php if ($targetIsSuper): ?>
-                  <!-- Super Admins are untouchable by everyone -->
                   <span style="color:#d71920; font-size:12px; font-weight:bold;">Protected</span>
               <?php elseif ($currentIsSuper): ?>
-                  <!-- Regular admins can only be demoted if the current active session is a Super Admin -->
                   <form method="post" style="display:inline" onsubmit="return confirm('Remove administrator privileges from this account?');">
                       <input type="hidden" name="action" value="demote">
                       <input type="hidden" name="id" value="<?=e($a['id'])?>">
@@ -165,8 +163,15 @@ require '../includes/header.php';
           <?php endif; ?>
 
           <?php if (!$targetIsSuper || $currentIsSuper || $isMe): ?>
-              <!-- Password reset is allowed if target is a normal admin, OR if the current user is a Super Admin, OR if resetting own password -->
               <details class="reset-details" style="display:inline-block; margin-left:5px;">
                   <summary class="mini-btn">Reset Password</summary>
                   <form method="post" class="reset-form">
                       <input type="hidden" name="action" value="reset_admin_password">
+                      <input type="hidden" name="id" value="<?=e($a['id'])?>">
+                      <label>New temporary password</label>
+                      <input type="password" name="new_password" minlength="8" required>
+                      <button class="mini-btn" type="submit">Reset</button>
+                  </form>
+              </details>
+          <?php endif; ?>
+        </td>
