@@ -7,7 +7,7 @@ services:
       - key: DB_HOST
         sync: false
       - key: DB_PORT
-        value: "33553"
+        value: "3306"
       - key: DB_NAME
         value: odynasties
       - key: DB_USER
