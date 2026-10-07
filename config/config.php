@@ -59,14 +59,14 @@ if (!empty($dbUrl)) {
   // If DATABASE_URL is present on Render, parse out the credentials
   $dbParts = parse_url($dbUrl);
   $host = $dbParts['host'] ?? '127.0.0.1';
-  $port = $dbParts['port'] ?? '3306';
+  $port = $dbParts['port'] ?? '33553';
   $user = $dbParts['user'] ?? 'root';
   $pass = $dbParts['pass'] ?? '';
   $db   = isset($dbParts['path']) ? ltrim($dbParts['path'], '/') : 'odynasties';
 } else {
   // Fallback to separate configuration arrays for local XAMPP and backup variables
   $host = envv('DB_HOST', '127.0.0.1');
-  $port = envv('DB_PORT', '3306');
+  $port = envv('DB_PORT', '33553');
   $db   = envv('DB_NAME', 'odynasties');
   $user = envv('DB_USER', 'root');
   $pass = envv('DB_PASS', envv('DB_PASSWORD', ''));
