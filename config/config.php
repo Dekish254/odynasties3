@@ -65,11 +65,12 @@ if (!empty($dbUrl)) {
   $db   = isset($dbParts['path']) ? ltrim($dbParts['path'], '/') : 'odynasties';
 } else {
   // Fallback to separate configuration arrays for local XAMPP and backup variables
-  $host = envv('DB_HOST', '127.0.0.1');
-  $port = envv('DB_PORT', '33553');
-  $db   = envv('DB_NAME', 'odynasties');
-  $user = envv('DB_USER', 'root');
-  $pass = envv('DB_PASS', envv('DB_PASSWORD', ''));
+  $host = getenv('DB_HOST') ?: 'altaria.proxy.rlwy.net';
+$port = getenv('DB_PORT') ?: '33553';
+$db   = getenv('DB_NAME') ?: (getenv('DB_DATABASE') ?: 'railway'); // Looks for DB_NAME or DB_DATABASE, defaults to railway
+$user = getenv('DB_USER') ?: 'root';
+$pass = getenv('DB_PASS') ?: (getenv('DB_PASSWORD') ?: 'OGPjARzHlyssppysTWVWvrsYCszLHRHy');
+
 }
 
 $donation_mpesa_number = envv('DONATION_MPESA_NUMBER', '');
