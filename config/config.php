@@ -88,7 +88,13 @@ try {
 } catch (PDOException $e) {
   error_log('Odynasties database connection failed: '.$e->getMessage());
   http_response_code(500);
-  die('Database connection failed. Check the DB_* environment variables and make sure the database schema has been imported.');
+  die('CONFIG DIAGNOSTIC<br>'
+     'HOST: ' . htmlspecialchars($host) .<br>
+      'PORT: ' . htmlspecialchars($port) .<br>
+      'DB: ' . htmlspecialchars($db) .<br>
+      'USER: ' . htmlspecialchars($user) .<br>
+      'PASSWORD SET: ' . ($pass !== '' ? 'YES' : 'NO') .<br>
+      'PDO ERROR: ' . htmlspecialchars($host) .<br>);
 }
 
 function e($v){return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');}
