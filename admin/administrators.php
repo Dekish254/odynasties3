@@ -177,3 +177,10 @@ require '../includes/header.php';
             echo '<label>New temporary password</label>';
             echo '<input type="password" name="new_password" minlength="8" required>';
             echo '<button class="mini-btn" type="submit">Reset</button>';
+            echo '';
+echo '';
+}
+echo '';
+echo '';
+}
+?>
