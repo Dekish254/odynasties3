@@ -128,7 +128,7 @@ require '../includes/header.php';
           <input type="hidden" name="action" value="promote">
           <div class="field"><label>Select member</label><select name="id" required>
             <option value="">Choose a member</option>
-            <?php foreach($members as $m): ?><option value="<?=e($m['id'])?>"><?=e($m['name'].' — '.$m['email'])?></option><?php endforeach; ?>
+            <?php foreach($members as $m): ?><option value="<?php echo e($m['id']); ?>"><?php echo e($m['name'].' — '.$m['email']); ?></option><?php endforeach; ?>
           </select></div>
           <button class="btn">Make Administrator</button>
         </form>
@@ -138,40 +138,42 @@ require '../includes/header.php';
     <div class="tablewrap" style="margin-top:28px"><table class="table">
       <thead><tr><th>Administrator</th><th>Email</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead>
       <tbody>
-      <?php foreach($admins as $a): 
+      <?php 
+      foreach($admins as $a) {
         $targetIsSuper = (int)($a['is_super'] ?? 0) === 1;
         $isMe = (int)$a['id'] === (int)($_SESSION['admin_user']['id'] ?? 0);
-      ?><tr>
-        <td>
-            <strong><?=e($a['name'])?></strong> 
-            <?php if($targetIsSuper): ?><span class="badge" style="background:#d71920;color:#fff;padding:2px 6px;font-size:11px;border-radius:4px;margin-left:5px;">SUPER</span><?php endif; ?>
-        </td>
-        <td><?=e($a['email'])?></td><td><?=e(ucfirst($a['status']))?></td><td><?=e(date('d M Y',strtotime($a['created_at'])))?></td>
-        <td class="actions-cell">
-          <?php if (!$isMe): ?>
-              <?php if ($targetIsSuper): ?>
-                  <span style="color:#d71920; font-size:12px; font-weight:bold;">Protected</span>
-              <?php elseif ($currentIsSuper): ?>
-                  <form method="post" style="display:inline" onsubmit="return confirm('Remove administrator privileges from this account?');">
-                      <input type="hidden" name="action" value="demote">
-                      <input type="hidden" name="id" value="<?=e($a['id'])?>">
-                      <button class="mini-btn danger">Make Member</button>
-                  </form>
-              <?php else: ?>
-                  <span style="color:gray; font-size:12px;">Restricted</span>
-              <?php endif; ?>
-          <?php endif; ?>
+        
+        echo '<tr>';
+        echo '<td><strong>' . e($a['name']) . '</strong>';
+        if ($targetIsSuper) {
+            echo ' <span class="badge" style="background:#d71920;color:#fff;padding:2px 6px;font-size:11px;border-radius:4px;margin-left:5px;">SUPER</span>';
+        }
+        echo '</td>';
+        echo '<td>' . e($a['email']) . '</td>';
+        echo '<td>' . e(ucfirst($a['status'])) . '</td>';
+        echo '<td>' . e(date('d M Y', strtotime($a['created_at']))) . '</td>';
+        echo '<td class="actions-cell">';
+        
+        if (!$isMe) {
+            if ($targetIsSuper) {
+                echo '<span style="color:#d71920; font-size:12px; font-weight:bold;">Protected</span>';
+            } elseif ($currentIsSuper) {
+                echo '<form method="post" style="display:inline" onsubmit="return confirm(\'Remove administrator privileges from this account?\');">';
+                echo '<input type="hidden" name="action" value="demote">';
+                echo '<input type="hidden" name="id" value="' . e($a['id']) . '">';
+                echo '<button class="mini-btn danger">Make Member</button>';
+                echo '</form>';
+            } else {
+                echo '<span style="color:gray; font-size:12px;">Restricted</span>';
+            }
+        }
 
-          <?php if (!$targetIsSuper || $currentIsSuper || $isMe): ?>
-              <details class="reset-details" style="display:inline-block; margin-left:5px;">
-                  <summary class="mini-btn">Reset Password</summary>
-                  <form method="post" class="reset-form">
-                      <input type="hidden" name="action" value="reset_admin_password">
-                      <input type="hidden" name="id" value="<?=e($a['id'])?>">
-                      <label>New temporary password</label>
-                      <input type="password" name="new_password" minlength="8" required>
-                      <button class="mini-btn" type="submit">Reset</button>
-                  </form>
-              </details>
-          <?php endif; ?>
-        </td>
+        if (!$targetIsSuper || $currentIsSuper || $isMe) {
+            echo '<details class="reset-details" style="display:inline-block; margin-left:5px;">';
+            echo '<summary class="mini-btn">Reset Password</summary>';
+            echo '<form method="post" class="reset-form">';
+            echo '<input type="hidden" name="action" value="reset_admin_password">';
+            echo '<input type="hidden" name="id" value="' . e($a['id']) . '">';
+            echo '<label>New temporary password</label>';
+            echo '<input type="password" name="new_password" minlength="8" required>';
+            echo '<button class="mini-btn" type="submit">Reset</button>';
