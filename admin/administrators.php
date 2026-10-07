@@ -137,7 +137,7 @@ require '../includes/header.php';
 
     <div class="tablewrap" style="margin-top:28px"><table class="table">
       <thead><tr><th>Administrator</th><th>Email</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead>
-      <tbody>
+           <tbody>
       <?php 
       foreach($admins as $a) {
         $targetIsSuper = (int)($a['is_super'] ?? 0) === 1;
@@ -158,29 +158,36 @@ require '../includes/header.php';
             if ($targetIsSuper) {
                 echo '<span style="color:#d71920; font-size:12px; font-weight:bold;">Protected</span>';
             } elseif ($currentIsSuper) {
-                echo '<form method="post" style="display:inline" onsubmit="return confirm(\'Remove administrator privileges from this account?\');">';
+                // FIXED FORM: Explicitly uses method="POST" and clean input layout mapping
+                echo '<form method="POST" action="administrators.php" style="display:inline;" onsubmit="return confirm(\'Are you absolutely sure you want to revoke administrator privileges from this account?\');">';
                 echo '<input type="hidden" name="action" value="demote">';
-                echo '<input type="hidden" name="id" value="' . e($a['id']) . '">';
-                echo '<button class="mini-btn danger">Make Member</button>';
+                echo '<input type="hidden" name="id" value="' . (int)$a['id'] . '">';
+                echo '<button type="submit" class="mini-btn danger" style="background:#d71920; color:#fff; padding:4px 8px; border:none; border-radius:4px; cursor:pointer;">Make Member</button>';
                 echo '</form>';
             } else {
                 echo '<span style="color:gray; font-size:12px;">Restricted</span>';
             }
+        } else {
+            echo '<span style="color:gray; font-size:12px;">You</span>';
         }
 
         if (!$targetIsSuper || $currentIsSuper || $isMe) {
             echo '<details class="reset-details" style="display:inline-block; margin-left:5px;">';
-            echo '<summary class="mini-btn">Reset Password</summary>';
-            echo '<form method="post" class="reset-form">';
+            echo '<summary class="mini-btn" style="cursor:pointer; padding:2px 6px;">Reset Password</summary>';
+            echo '<form method="POST" action="administrators.php" class="reset-form" style="margin-top:5px; background:rgba(0,0,0,0.1); padding:8px; border-radius:4px;">';
             echo '<input type="hidden" name="action" value="reset_admin_password">';
-            echo '<input type="hidden" name="id" value="' . e($a['id']) . '">';
-            echo '<label>New temporary password</label>';
-            echo '<input type="password" name="new_password" minlength="8" required>';
-            echo '<button class="mini-btn" type="submit">Reset</button>';
-            echo '';
-echo '';
-}
-echo '';
-echo '';
-}
+            echo '<input type="hidden" name="id" value="' . (int)$a['id'] . '">';
+            echo '<label style="display:block; font-size:11px; margin-bottom:3px;">New temporary password</label>';
+            echo '<input type="password" name="new_password" minlength="8" required style="padding:4px; font-size:12px; margin-right:5px;">';
+            echo '<button class="mini-btn" type="submit" style="padding:4px 8px;">Reset</button>';
+            echo '</form>';
+            echo '</details>';
+        }
+        
+        echo '</td>';
+        echo '</tr>';
+      } 
+      ?>
+      </tbody>
+
 ?>
