@@ -34,9 +34,15 @@ elseif ($u['role'] !== $role) {
         : 'This account is an administrator. Choose “Administrator” to sign in.';
     } else {
       $sessionUser = [
-        'id'=>$u['id'],'name'=>$u['name'],'email'=>$u['email'],'role'=>$u['role'],
-        'blood_group'=>$u['blood_group'],'profile_picture'=>$u['profile_picture']??null
-      ];
+  'id' => $u['id'],
+  'name' => $u['name'],
+  'email' => $u['email'],
+  'role' => $u['role'],
+  // --- ADD OR VERIFY THIS EXACT LINE IS PRESENT ---
+  'is_super' => (int)($u['is_super'] ?? 0), 
+  'blood_group' => $u['blood_group'],
+  'profile_picture' => $u['profile_picture'] ?? null
+];
       $token = bin2hex(random_bytes(32));
       $pdo->prepare('INSERT INTO login_sessions(user_id,session_token,role,last_seen) VALUES(?,?,?,NOW())')
           ->execute([$u['id'],$token,$u['role']]);
