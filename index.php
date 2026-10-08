@@ -76,27 +76,28 @@ elseif ($u['role'] !== $role) {
 .landing .brandline{display:flex;align-items:center;gap:12px;font-weight:800;font-size:25px}
 .landing .brandline img{width:52px;height:52px}
 
-/* Main Top Grid: About on left, Login on right */
+/* Main Top Grid Layout */
 .landing .hero-public{display:grid;grid-template-columns:1.25fr .75fr;gap:45px;align-items:start;padding:25px 0 45px}
 
-/* About Block Adjustments */
-.about-block h1{font-size:clamp(32px,4.5vw,48px);line-height:1.1;margin:0 0 15px}
-.about-block h2{font-size:22px;color:#d71920;margin:0 0 15px}
+/* Left Column Styling */
+.about-block h1{font-size:clamp(32px,4.5vw,48px);line-height:1.1;margin:0 0 25px}
+.about-block h3{font-size:22px;color:#d71920;margin:25px 0 10px}
 .about-block p{font-size:16px;line-height:1.6;color:#dbe4e8;margin-bottom:15px}
 
-/* Founder Row inside the About column */
-.founder-row {display:flex;align-items:center;gap:20px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:15px;margin-top:20px}
-.founder-img {width:70px;height:70px;object-fit:cover;border-radius:50%;border:2px solid #d71920}
-.founder-info strong {display:block;font-size:18px;color:#fff}
-.founder-info span {font-size:14px;color:#a2b4be}
+/* Enhanced Top Founder Showcase Layout */
+.founder-showcase {display:flex;align-items:center;gap:25px;background:linear-gradient(135deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,.01) 100%);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:25px;margin-bottom:30px;box-shadow:0 10px 30px rgba(0,0,0,0.15)}
+.founder-img-big {width:120px;height:120px;object-fit:cover;border-radius:50%;border:3px solid #d71920;box-shadow:0 4px 15px rgba(215,25,32,0.3);flex-shrink:0}
+.founder-meta strong {display:block;font-size:24px;color:#fff;margin-bottom:4px;letter-spacing:-0.5px}
+.founder-meta .title-badge {display:inline-block;background:#d71920;color:#fff;font-size:12px;font-weight:700;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-bottom:6px}
+.founder-meta p {font-size:14px;color:#a2b4be;margin:0;line-height:1.4}
 
-/* Bottom Grid for Cards */
+/* Bottom Grid for Value Proposition Cards */
 .ad-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:35px 0 75px;border-top:1px solid rgba(255,255,255,.08)}
 .ad-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px}
 .ad-card b{display:block;font-size:18px;margin-bottom:8px;color:#fff}
 .ad-card span{font-size:14px;line-height:1.5;color:#dbe4e8}
 
-/* Login Card Keepers */
+/* Login Side-Card Container */
 .login-card{background:#fff;color:#14212b;border-radius:18px;padding:28px;box-shadow:0 18px 50px rgba(0,0,0,.3);position:sticky;top:20px}
 .login-card h2{margin-top:0;font-size:24px}
 .role-switch{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0 20px}
@@ -111,6 +112,9 @@ elseif ($u['role'] !== $role) {
   .login-card{max-width:100%;position:static}
   .ad-grid{grid-template-columns:1fr;padding-bottom:45px}
 }
+@media(max-width:480px){
+  .founder-showcase {flex-direction:column;text-align:center;padding:20px}
+}
 </style>
 </head>
 <body class="landing">
@@ -119,34 +123,38 @@ elseif ($u['role'] !== $role) {
 </div>
 
 <main class="container">
-  <!-- Top Section: About next to Login -->
   <div class="hero-public">
     
-    <!-- Left Column: About & History -->
+    <!-- Left Column: High-Visibility Founder Intro followed by Narrative History -->
     <section class="about-block">
       <h1>One Blood Group.<br>One Community.<br>One Dynasty.</h1>
-      <h2>Welcome to Odynasties</h2>
       
+      <!-- Top High-Visibility Founder Showcase -->
+      <div class="founder-showcase">
+        <!-- UPDATE PATH: Replace 'assets/images/founder.jpg' with your real image source file -->
+        <img src="<?=base_url('assets/images/founder.jpg')?>" alt="Founder of Odynasties" class="founder-img-big" onerror="this.src='https://placeholder.com';">
+        <div class="founder-meta">
+          <span class="title-badge">Founder & Visionary</span>
+          <strong>[Founder's Full Name]</strong>
+          <p>Architect of the Odynasties network and global community platform.</p>
+        </div>
+      </div>
+
+      <h3>Welcome to Odynasties</h3>
       <p>
         The name <strong>Odynasties</strong> represents the lineage, unity, and strength shared by those with the Type O blood group. Often recognized as universal blood donors, Type O individuals possess a unique biological connection that enables them to sustain lives across the globe. Our name celebrates this shared legacy as a global family—a dynasty built on compassion and shared responsibility.
       </p>
       
+      <h3>Our Journey & History</h3>
       <p>
         Founded with a vision to transform a shared biological trait into a support engine, Odynasties began as a network of dedicated individuals. We recognized that while Type O blood is always in high demand, finding reliable, local donor connections during unexpected emergencies presented constant challenges. 
       </p>
-
-      <!-- Inline Founder Card -->
-      <div class="founder-row">
-        <!-- UPDATE PATH: Replace 'assets/images/founder.jpg' with your real filename -->
-        <img src="<?=base_url('assets/images/founder.jpg')?>" alt="Founder of Odynasties" class="founder-img" onerror="this.src='https://placeholder.com';">
-        <div class="founder-info">
-          <strong>[Founder's Full Name]</strong>
-          <span>Founder, Odynasties Dynasty & History</span>
-        </div>
-      </div>
+      <p>
+        What started as an urgent initiative has evolved into an integrated, interactive system. Today, Odynasties bridges modern web technology with grassroots healthcare outreach, ensuring that our collective strength is accessible to members whenever and wherever they need support.
+      </p>
     </section>
 
-    <!-- Right Column: Login Card (Pinned at the Top) -->
+    <!-- Right Column: Login Card Container -->
     <section class="login-card">
       <h2>Sign in to Odynasties</h2>
       <p class="muted">Choose how you are registered before signing in.</p>
@@ -169,7 +177,7 @@ elseif ($u['role'] !== $role) {
 
   </div>
 
-  <!-- Bottom Section: Rest of the Content (Features / Value Props) -->
+  <!-- Bottom Section: Value Proposition Cards Grid -->
   <section class="ad-grid">
     <div class="ad-card"><b>🩸 Donate & Save Lives</b><span>Support blood donation and help connect donors when needed.</span></div>
     <div class="ad-card"><b>🤝 Community Support</b><span>Share experiences and build a stronger O blood group community.</span></div>
