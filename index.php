@@ -141,7 +141,7 @@ elseif ($u['role'] !== $role) {
           <!-- UPDATE PATH: Replace 'assets/images/founder.jpg' with your real image source file -->
           <img src="<?=base_url('assets/images/founder.jpg')?>" alt="Founder of Odynasties" class="founder-img-large" onerror="this.src='https://placeholder.com';">
           <div class="founder-title">
-            <strong>[Founder's Full Name]</strong>
+            <strong>APOSTLE EMMANUEL NZUKI</strong>
             Founder, Odynasties
           </div>
         </div>
