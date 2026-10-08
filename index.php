@@ -75,40 +75,41 @@ elseif ($u['role'] !== $role) {
 .landing .topbar{padding:20px 0}
 .landing .brandline{display:flex;align-items:center;gap:12px;font-weight:800;font-size:25px}
 .landing .brandline img{width:52px;height:52px}
-.landing .hero-public{min-height:calc(100vh - 90px);display:grid;grid-template-columns:1.25fr .75fr;gap:55px;align-items:center;padding:45px 0 75px}
-.landing .ad-copy h1{font-size:clamp(42px,6vw,72px);line-height:1;margin:0 0 15px}
-.landing .ad-copy h2{font-size:25px;margin:0 0 15px}
-.landing .ad-copy p{font-size:18px;line-height:1.7;color:#dbe4e8;max-width:680px}
-.ad-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:28px}
-.ad-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:18px}
-.ad-card b{display:block;margin-bottom:6px}
-.login-card{background:#fff;color:#14212b;border-radius:18px;padding:28px;box-shadow:0 18px 50px rgba(0,0,0,.3)}
-.login-card h2{margin-top:0}
+
+/* Main Top Grid: About on left, Login on right */
+.landing .hero-public{display:grid;grid-template-columns:1.25fr .75fr;gap:45px;align-items:start;padding:25px 0 45px}
+
+/* About Block Adjustments */
+.about-block h1{font-size:clamp(32px,4.5vw,48px);line-height:1.1;margin:0 0 15px}
+.about-block h2{font-size:22px;color:#d71920;margin:0 0 15px}
+.about-block p{font-size:16px;line-height:1.6;color:#dbe4e8;margin-bottom:15px}
+
+/* Founder Row inside the About column */
+.founder-row {display:flex;align-items:center;gap:20px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:15px;margin-top:20px}
+.founder-img {width:70px;height:70px;object-fit:cover;border-radius:50%;border:2px solid #d71920}
+.founder-info strong {display:block;font-size:18px;color:#fff}
+.founder-info span {font-size:14px;color:#a2b4be}
+
+/* Bottom Grid for Cards */
+.ad-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:35px 0 75px;border-top:1px solid rgba(255,255,255,.08)}
+.ad-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px}
+.ad-card b{display:block;font-size:18px;margin-bottom:8px;color:#fff}
+.ad-card span{font-size:14px;line-height:1.5;color:#dbe4e8}
+
+/* Login Card Keepers */
+.login-card{background:#fff;color:#14212b;border-radius:18px;padding:28px;box-shadow:0 18px 50px rgba(0,0,0,.3);position:sticky;top:20px}
+.login-card h2{margin-top:0;font-size:24px}
 .role-switch{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0 20px}
-.role-switch label{border:1px solid #ddd;border-radius:10px;padding:12px;text-align:center;cursor:pointer;font-weight:700}
+.role-switch label{border:1px solid #ddd;border-radius:10px;padding:12px;text-align:center;cursor:pointer;font-weight:700;font-size:14px}
 .role-switch input{margin-right:7px}
 .login-error{background:#fff0f1;color:#9e1c25;padding:11px;border-radius:8px;margin-bottom:14px}
 .signup-note{font-size:13px;text-align:center;margin-top:15px}
 .signup-note a{color:#d71920;font-weight:700}
 
-/* New Section - Founder, Name & History Styling */
-.about-section {background:#0c2231;padding:80px 0;border-top:1px solid rgba(255,255,255,.05)}
-.about-grid {display:grid;grid-template-columns:1fr 1.25fr;gap:60px;align-items:center}
-.founder-image-wrapper {text-align:center;position:relative}
-.founder-img {width:100%;max-width:320px;height:auto;aspect-ratio:1/1;object-fit:cover;border-radius:50%;border:4px solid #d71920;box-shadow:0 10px 30px rgba(0,0,0,.4)}
-.founder-title {margin-top:15px;font-size:16px;color:#dbe4e8}
-.founder-title strong {display:block;font-size:22px;color:#fff;margin-bottom:2px}
-.about-content h3 {font-size:32px;margin:0 0 20px;color:#fff;position:relative}
-.about-content h3::after {content:'';display:block;width:50px;height:3px;background:#d71920;margin-top:10px}
-.about-content p {font-size:16px;line-height:1.8;color:#dbe4e8;margin-bottom:15px}
-
-@media(max-width:850px){
-  .landing .hero-public{grid-template-columns:1fr}
-  .ad-grid{grid-template-columns:1fr}
-  .landing .login-card{max-width:520px;margin:0 auto}
-  /* Responsive styles for the new section */
-  .about-grid {grid-template-columns:1fr;gap:40px;text-align:center}
-  .about-content h3::after {margin:10px auto 0}
+@media(max-width:950px){
+  .landing .hero-public{grid-template-columns:1fr;gap:35px}
+  .login-card{max-width:100%;position:static}
+  .ad-grid{grid-template-columns:1fr;padding-bottom:45px}
 }
 </style>
 </head>
@@ -116,69 +117,65 @@ elseif ($u['role'] !== $role) {
 <div class="container topbar">
   <div class="brandline"><img src="<?=base_url('assets/images/logo.svg')?>" alt="Odynasties"><span>Odynasties</span></div>
 </div>
-<main class="container hero-public">
-  <section class="ad-copy">
-    <h1>One Blood Group.<br>One Community.<br>One Dynasty.</h1>
-    <h2>Welcome to Odynasties</h2>
-    <p>A community for people with blood group O to connect, support one another, share experiences, give back and grow together.</p>
-    <div class="ad-grid">
-      <div class="ad-card"><b>🩸 Donate & Save Lives</b><span>Support blood donation and help connect donors when needed.</span></div>
-      <div class="ad-card"><b>🤝 Community Support</b><span>Share experiences and build a stronger O blood group community.</span></div>
-      <div class="ad-card"><b>🌍 One Global Community</b><span>Connect with people who share the same blood group and values.</span></div>
-    </div>
-  </section>
 
-  <section class="login-card">
-    <h2>Sign in to Odynasties</h2>
-    <p class="muted">Choose how you are registered before signing in.</p>
-    <?php if($error): ?><div class="login-error"><?=e($error)?></div><?php endif; ?>
-    <form method="post">
-      <div class="field">
-        <label>Login as</label>
-        <div class="role-switch">
-          <label><input type="radio" name="login_as" value="member" checked> Member</label>
-          <label><input type="radio" name="login_as" value="admin"> Administrator</label>
-        </div>
-      </div>
-      <div class="field"><label>Email</label><input type="email" name="email" required autocomplete="username"></div>
-      <div class="field"><label>Password</label><input type="password" name="password" required autocomplete="current-password"></div>
-      <button class="btn" style="width:100%">Sign In</button>
-    </form>
-    <div class="signup-note">Not registered as a member? <a href="register.php">Sign up here</a></div>
-    <div class="signup-note">Administrator accounts are created or promoted by an existing administrator.</div>
-  </section>
-</main>
-
-<!-- NEW SECTION: ABOUT, FOUNDER & HISTORY -->
-<section class="about-section">
-  <div class="container about-grid">
+<main class="container">
+  <!-- Top Section: About next to Login -->
+  <div class="hero-public">
     
-    <div class="founder-image-wrapper">
-      <!-- UPDATE PATH: Replace 'assets/images/founder.jpg' with your real filename -->
-      <img src="<?=base_url('assets/images/founder.jpg')?>" alt="Founder of Odynasties" class="founder-img" onerror="this.src='https://placeholder.com';">
-      <div class="founder-title">
-        <strong>[Founder's Full Name]</strong>
-        Founder, Odynasties
-      </div>
-    </div>
-
-    <div class="about-content">
-      <h3>The Meaning & Origin of Odynasties</h3>
+    <!-- Left Column: About & History -->
+    <section class="about-block">
+      <h1>One Blood Group.<br>One Community.<br>One Dynasty.</h1>
+      <h2>Welcome to Odynasties</h2>
+      
       <p>
         The name <strong>Odynasties</strong> represents the lineage, unity, and strength shared by those with the Type O blood group. Often recognized as universal blood donors, Type O individuals possess a unique biological connection that enables them to sustain lives across the globe. Our name celebrates this shared legacy as a global family—a dynasty built on compassion and shared responsibility.
       </p>
+      
+      <p>
+        Founded with a vision to transform a shared biological trait into a support engine, Odynasties began as a network of dedicated individuals. We recognized that while Type O blood is always in high demand, finding reliable, local donor connections during unexpected emergencies presented constant challenges. 
+      </p>
 
-      <h3>Our Journey & History</h3>
-      <p>
-        Founded with a vision to transform a shared biological trait into a support engine, Odynasties began as a small network of dedicated individuals. We recognized that while Type O blood is always in high demand, finding reliable, local donor connections during unexpected emergencies presented constant challenges. 
-      </p>
-      <p>
-        What started as an urgent initiative has evolved into an integrated, interactive system. Today, Odynasties bridges modern web technology with grassroots healthcare outreach, ensuring that our collective strength is accessible to members whenever and wherever they need support.
-      </p>
-    </div>
+      <!-- Inline Founder Card -->
+      <div class="founder-row">
+        <!-- UPDATE PATH: Replace 'assets/images/founder.jpg' with your real filename -->
+        <img src="<?=base_url('assets/images/founder.jpg')?>" alt="Founder of Odynasties" class="founder-img" onerror="this.src='https://placeholder.com';">
+        <div class="founder-info">
+          <strong>[Founder's Full Name]</strong>
+          <span>Founder, Odynasties Dynasty & History</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Login Card (Pinned at the Top) -->
+    <section class="login-card">
+      <h2>Sign in to Odynasties</h2>
+      <p class="muted">Choose how you are registered before signing in.</p>
+      <?php if($error): ?><div class="login-error"><?=e($error)?></div><?php endif; ?>
+      <form method="post">
+        <div class="field">
+          <label>Login as</label>
+          <div class="role-switch">
+            <label><input type="radio" name="login_as" value="member" checked> Member</label>
+            <label><input type="radio" name="login_as" value="admin"> Administrator</label>
+          </div>
+        </div>
+        <div class="field"><label>Email</label><input type="email" name="email" required autocomplete="username"></div>
+        <div class="field"><label>Password</label><input type="password" name="password" required autocomplete="current-password"></div>
+        <button class="btn" style="width:100%">Sign In</button>
+      </form>
+      <div class="signup-note">Not registered as a member? <a href="register.php">Sign up here</a></div>
+      <div class="signup-note">Administrator accounts are created or promoted by an existing administrator.</div>
+    </section>
 
   </div>
-</section>
+
+  <!-- Bottom Section: Rest of the Content (Features / Value Props) -->
+  <section class="ad-grid">
+    <div class="ad-card"><b>🩸 Donate & Save Lives</b><span>Support blood donation and help connect donors when needed.</span></div>
+    <div class="ad-card"><b>🤝 Community Support</b><span>Share experiences and build a stronger O blood group community.</span></div>
+    <div class="ad-card"><b>🌍 One Global Community</b><span>Connect with people who share the same blood group and values.</span></div>
+  </section>
+</main>
 
 </body>
 </html>
