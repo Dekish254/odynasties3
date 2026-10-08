@@ -74,29 +74,29 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
 .landing .brandline img{width:52px;height:52px}
 
 /* Main Top Grid Layout */
-.landing .hero-public{display:grid;grid-template-columns:1.25fr .75fr;gap:55px;align-items:start;padding:25px 0 45px}
+.landing .hero-public{display:grid;grid-template-columns:1.25fr .75fr;gap:45px;align-items:start;padding:25px 0 45px}
 
-/* Left Column Styling: Split into Founder Profile on left, Biography on right */
-.about-grid-inner {display:grid;grid-template-columns:1fr 1.5fr;gap:40px;align-items:start;margin-top:20px}
+/* Left Column Layout: Portrait on left, Biography on right */
+.about-grid-inner {display:grid;grid-template-columns:1fr 1.6fr;gap:35px;align-items:start;margin-top:10px}
 
 /* Large Founder Profile Styles */
 .founder-image-wrapper {text-align:center}
-.founder-img-large {width:100%;max-width:320px;height:auto;aspect-ratio:1/1;object-fit:cover;border-radius:50%;border:4px solid #d71920;box-shadow:0 10px 30px rgba(0,0,0,.4)}
-.founder-title {margin-top:15px;font-size:16px;color:#dbe4e8}
-.founder-title strong {display:block;font-size:22px;color:#fff;margin-bottom:2px}
+.founder-img-large {width:100%;max-width:260px;height:auto;aspect-ratio:1/1;object-fit:cover;border-radius:50%;border:4px solid #d71920;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.founder-title {margin-top:12px;font-size:14px;color:#dbe4e8}
+.founder-title strong {display:block;font-size:18px;color:#fff;margin-bottom:2px}
 
-/* Connect with Us Styles */
-.connect-container {margin-top:25px;padding-top:15px;border-top:1px solid rgba(255,255,255,.08)}
-.connect-title {font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#a2b4be;margin-bottom:12px}
-.social-links {display:flex;justify-content:center;flex-wrap:wrap;gap:10px}
-.social-btn {display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff;text-decoration:none;font-size:18px;font-weight:bold;transition:all 0.2s ease}
+/* Connect with Us Badge Row Styles */
+.connect-container {margin-top:20px;padding-top:15px;border-top:1px solid rgba(255,255,255,.08)}
+.connect-title {font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#a2b4be;margin-bottom:10px}
+.social-links {display:flex;justify-content:center;flex-wrap:wrap;gap:8px}
+.social-btn {display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff;text-decoration:none;font-size:15px;font-weight:bold;transition:all 0.2s ease}
 .social-btn:hover {background:#d71920;border-color:#d71920;transform:translateY(-2px)}
 
-/* Text Content Container */
-.about-content h1{font-size:clamp(32px,4vw,44px);line-height:1.1;margin:0 0 20px}
-.about-content h3 {font-size:24px;margin:25px 0 10px;color:#fff;position:relative}
-.about-content h3::after {content:'';display:block;width:40px;height:3px;background:#d71920;margin-top:8px}
-.about-content p {font-size:16px;line-height:1.7;color:#dbe4e8;margin-bottom:15px}
+/* Optimized Scaled Down Text Elements */
+.about-content h1{font-size:clamp(24px,3.5vw,34px);line-height:1.2;margin:0 0 15px}
+.about-content h3 {font-size:18px;margin:20px 0 8px;color:#fff;position:relative}
+.about-content h3::after {content:'';display:block;width:30px;height:2px;background:#d71920;margin-top:6px}
+.about-content p {font-size:14px;line-height:1.6;color:#dbe4e8;margin-bottom:12px}
 
 /* Bottom Grid for Value Proposition Cards */
 .ad-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:35px 0 75px;border-top:1px solid rgba(255,255,255,.08)}
@@ -113,11 +113,14 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
 .login-error{background:#fff0f1;color:#9e1c25;padding:11px;border-radius:8px;margin-bottom:14px}
 .signup-note{font-size:13px;text-align:center;margin-top:15px}
 .signup-note a{color:#d71920;font-weight:700}
+.field {margin-bottom:15px}
+.field label {display:block;margin-bottom:5px;font-weight:700;font-size:14px}
+.field input[type="email"], .field input[type="password"] {width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box}
 
 @media(max-width:1100px){
   .about-grid-inner {grid-template-columns:1fr;gap:30px;text-align:center}
-  .about-content h3::after {margin:8px auto 0}
-  .founder-img-large {max-width:240px}
+  .about-content h3::after {margin:6px auto 0}
+  .founder-img-large {max-width:200px}
 }
 @media(max-width:950px){
   .landing .hero-public{grid-template-columns:1fr;gap:45px}
@@ -154,19 +157,10 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
           <div class="connect-container">
             <div class="connect-title">Connect with Us</div>
             <div class="social-links">
-              <!-- WhatsApp Link -->
               <a href="https://wa.me" class="social-btn" target="_blank" title="WhatsApp">WA</a>
-              
-              <!-- Email Link -->
               <a href="mailto:your-email@odynasties.com" class="social-btn" title="Email">@</a>
-              
-              <!-- Facebook Link -->
               <a href="https://facebook.com" class="social-btn" target="_blank" title="Facebook">FB</a>
-              
-              <!-- TikTok Link -->
               <a href="https://tiktok.com" class="social-btn" target="_blank" title="TikTok">TT</a>
-              
-              <!-- Standard Direct Phone Call Link -->
               <a href="tel:+YOURPHONENUMBER" class="social-btn" title="Phone">📞</a>
             </div>
           </div>
