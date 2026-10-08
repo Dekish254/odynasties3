@@ -1,77 +1,45 @@
 <?php
-// 1. Force the server to print out hidden backend error variables instead of a blank screen
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 require 'config/config.php'; 
-require_member(); // Safeguard: Block unauthenticated traffic
+require_member();
 
-// =========================================================================
-// ⚡ AUTOMATED SELF-INSTALLING DATABASE MAPPING LAYER (BYPASSES TERMINAL)
-// =========================================================================
-try {
-    \$autoInstallQuery = "
-    CREATE TABLE IF NOT EXISTS `project_donations` (
-      `id` INT AUTO_INCREMENT PRIMARY KEY,
-      `user_id` INT NOT NULL,
-      `phone_number` VARCHAR(15) NOT NULL,
-      `amount` DECIMAL(10,2) NOT NULL,
-      `merchant_request_id` VARCHAR(100) UNIQUE NOT NULL,
-      `checkout_request_id` VARCHAR(100) UNIQUE NOT NULL,
-      `mpesa_receipt_number` VARCHAR(50) NULL DEFAULT NULL,
-      `status` ENUM('PENDING', 'SUCCESS', 'FAILED') DEFAULT 'PENDING',
-      `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-      `updated_at` DATETIME ON UPDATE CURRENT_TIMESTAMP,
-      FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-    ";
-    
-    // Execute table construction seamlessly from your approved web server node
-    pdo->exec(autoInstallQuery);
-} catch (PDOException \$e) {
-    die("Database Self-Installation Failed: " . htmlspecialchars(\$e->getMessage()));
-}
-// =========================================================================
-
-// Ensure the form request is a POST sequence coming directly from your payment gateway screen
-if (\(_SERVER['REQUEST_METHOD'] !== 'POST' \vert{}\vert{} (\)_POST['gateway'] ?? '') !== 'mpesa') {
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || ($_POST['gateway'] ?? '') !== 'mpesa') {
     header('Location: ' . base_url('payment-gateways.php'));
     exit;
 }
 
-amount = (int)(_POST['amount'] ?? 0);
-phone = trim(_POST['phone'] ?? '');
-userId = _SESSION['member_user']['id'];
+$amount = (int)($_POST['amount'] ?? 0);
+$phone  = trim($_POST['phone'] ?? '');
+$userId = $_SESSION['member_user']['id'];
 
-// Normalize mobile format to Safaricom's required 254XXXXXXXXX string
-\(phone = preg_replace('/[^0-9]/', '',\)phone);
-if (strpos(\(phone, '0') === 0) {\)phone = '254' . substr(\(phone, 1); } elseif (strpos(\)phone, '+') === 0) {
-    phone = substr(phone, 1);
+$phone = preg_replace('/[^0-9]/', '', $phone);
+if (strpos($phone, '0') === 0) {
+    $phone = '254' . substr($phone, 1);
+} elseif (strpos($phone, '+') === 0) {
+    $phone = substr($phone, 1);
 }
 
-// Validation rules boundary check
-if (amount < 10 || strlen(phone) !== 12) {
+if ($amount < 10 || strlen($phone) !== 12) {
     die("Error: Please provide a valid transaction amount (Min KES 10) and correct phone format (2547XXXXXXXX).");
 }
 
-// =============================================================
-// YOUR APPROVED LIVE PRODUCTION BUY GOODS (TILL) CREDENTIALS
-// =============================================================
-\$consumerKey       = "3B91FGqA6qxUVKL5vXQ8Sd1oqSA9H1vQFWPPopsYQQhHPZnc"; 
-\$consumerSecret    = "dqANw2odXYFmDhac0wqpee3gBPFQ3w1UpIqEbiSxnzTw1rSQpEJlAecjQDhp1H1P";
-\$storeNumber       = "7122120"; // Your explicit M-Pesa Buy Goods Till Number
-\$passkey           = "ed3513511649cc0565e6b9e843ddef6947731076df3cb552a7a4eefc8bc7b4fc"; // Your production passkey
+$consumerKey       = "3B91FGqA6qxUVKL5vXQ8Sd1oqSA9H1vQFWPPopsYQQhHPZnc"; 
+$consumerSecret    = "dqANw2odXYFmDhac0wqpee3gBPFQ3w1UpIqEbiSxnzTw1rSQpEJlAecjQDhp1H1P";
+$storeNumber       = "7122120"; 
+$passkey           = "ed3513511649cc0565e6b9e843ddef6947731076df3cb552a7a4eefc8bc7b4fc"; 
 
-businessShortCode = storeNumber; 
-\$timestamp = date('YmdHis');
-\(password  = base64_encode(\)businessShortCode . passkey . timestamp);
+$businessShortCode = $storeNumber; 
+$timestamp = date('YmdHis');
+$password  = base64_encode($businessShortCode . $passkey . $timestamp);
 
-\(callbackUrl = base_url('mpesa-callback.php');\)accountReference = "Odynasties";
-\$transactionDesc  = "Project Funding Support";
+$callbackUrl = base_url('mpesa-callback.php'); 
+$accountReference = "Odynasties";
+$transactionDesc  = "Project Funding Support";
 
-// Concatenate and completely trim keys to eliminate unintended spaces
-\$credentials = base64_encode(trim(consumerKey) . ":" . trim(consumerSecret));
+$credentials = base64_encode(trim($consumerKey) . ":" . trim($consumerSecret));
 ?>
 <!doctype html>
 <html lang="en">
@@ -93,29 +61,26 @@ businessShortCode = storeNumber;
 <div class="loader-card">
   <div class="spinner"></div>
   <h2>Connecting to M-Pesa...</h2>
-  <p>Please hold tight. We are securely communicating with Safaricom to trigger the STK PIN prompt directly onto your phone (<strong>+<?=e(\$phone)?></strong>).</p>
+  <p>Please hold tight. We are securely communicating with Safaricom to trigger the STK PIN prompt directly onto your phone (<strong>+<?=e($phone)?></strong>).</p>
 </div>
 
-<!-- Log transaction metadata parameters inside Railway backend dynamically before launching AJAX -->
 <?php
-  // Generate tracking references early to seed the database record
-  \$merchantRequestId = "ODY_M_" . uniqid();
-  \$checkoutRequestId = "ODY_C_" . bin2hex(random_bytes(8));
+  $merchantRequestId = "ODY_M_" . uniqid();
+  $checkoutRequestId = "ODY_C_" . bin2hex(random_bytes(8));
   
-  stmt = pdo->prepare("
+  $stmt = $pdo->prepare("
       INSERT INTO project_donations (user_id, phone_number, amount, merchant_request_id, checkout_request_id, status) 
       VALUES (?, ?, ?, ?, ?, 'PENDING')
   ");
-  \(stmt->execute([\)userId, phone, amount, merchantRequestId, checkoutRequestId]);
+  $stmt->execute([$userId, $phone, $amount, $merchantRequestId, $checkoutRequestId]);
 ?>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    // Step 1: Request Authorization Access Token using your Kenyan ISP Network
     fetch("https://safaricom.co.ke", {
         method: "GET",
         headers: {
-            "Authorization": "Basic <?=\$credentials?>"
+            "Authorization": "Basic <?=$credentials?>"
         }
     })
     .then(res => res.json())
@@ -124,7 +89,6 @@ document.addEventListener("DOMContentLoaded", function() {
             throw new Error("Safaricom Authorization Rejected. Verify portal key entries.");
         }
         
-        // Step 2: Fire the STK Push Request Payload directly from the user's browser
         return fetch("https://safaricom.co.ke", {
             method: "POST",
             headers: {
@@ -132,17 +96,17 @@ document.addEventListener("DOMContentLoaded", function() {
                 "Authorization": "Bearer " + authData.access_token
             },
             body: JSON.stringify({
-                "BusinessShortCode": "<?=\$businessShortCode?>",
-                "Password": "<?=\$password?>",
-                "Timestamp": "<?=\$timestamp?>",
+                "BusinessShortCode": "<?=$businessShortCode?>",
+                "Password": "<?=$password?>",
+                "Timestamp": "<?=$timestamp?>",
                 "TransactionType": "CustomerBuyGoodsOnline",
-                "Amount": "<?=\$amount?>",
-                "PartyA": "<?=\$phone?>",
-                "PartyB": "<?=\$storeNumber?>",
-                "PhoneNumber": "<?=\$phone?>",
-                "CallBackURL": "<?=\$callbackUrl?>",
-                "AccountReference": "<?=\$accountReference?>",
-                "TransactionDesc": "<?=\$transactionDesc?>"
+                "Amount": "<?=$amount?>",
+                "PartyA": "<?=$phone?>",
+                "PartyB": "<?=$storeNumber?>",
+                "PhoneNumber": "<?=$phone?>",
+                "CallBackURL": "<?=$callbackUrl?>",
+                "AccountReference": "<?=$accountReference?>",
+                "TransactionDesc": "<?=$transactionDesc?>"
             })
         });
     })
