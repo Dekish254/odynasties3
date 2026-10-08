@@ -85,13 +85,12 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
 .founder-title {margin-top:15px;font-size:16px;color:#dbe4e8}
 .founder-title strong {display:block;font-size:22px;color:#fff;margin-bottom:2px}
 
-/* Connect with Us Module Styles - Vertically Stacked Array */
-.connect-container {margin-top:25px;padding-top:15px;border-top:1px solid rgba(255,255,255,.08);text-align:left}
-.connect-title {font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#a2b4be;margin-bottom:12px;text-align:center}
-.social-links {display:flex;flex-direction:column;gap:8px;max-width:260px;margin:0 auto}
-.social-btn {display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff;text-decoration:none;font-size:14px;font-weight:600;transition:all 0.2s ease}
-.social-btn svg {width:18px;height:18px;fill:#fff;flex-shrink:0;transition:fill 0.2s ease}
-.social-btn:hover {background:#d71920;border-color:#d71920;transform:translateX(4px)}
+/* Connect with Us Module Styles */
+.connect-container {margin-top:25px;padding-top:15px;border-top:1px solid rgba(255,255,255,.08)}
+.connect-title {font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#a2b4be;margin-bottom:12px}
+.social-links {display:flex;justify-content:center;flex-wrap:wrap;gap:10px}
+.social-btn {display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff;text-decoration:none;font-size:18px;font-weight:bold;transition:all 0.2s ease}
+.social-btn:hover {background:#d71920;border-color:#d71920;transform:translateY(-2px)}
 
 /* Text Content Container */
 .about-content h1{font-size:clamp(32px,4vw,44px);line-height:1.1;margin:0 0 20px}
@@ -108,27 +107,12 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
 /* Login Side-Card Container */
 .login-card{background:#fff;color:#14212b;border-radius:18px;padding:28px;box-shadow:0 18px 50px rgba(0,0,0,.3);position:sticky;top:20px}
 .login-card h2{margin-top:0;font-size:24px}
-.login-card .field {margin-bottom:15px;display:block}
-.login-card .field label {display:block;margin-bottom:5px;font-weight:700;color:#14212b}
-.login-card .field input[type="email"], .login-card .field input[type="password"] {width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;background:#fff;color:#14212b}
 .role-switch{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0 20px}
-.role-switch label{border:1px solid #ddd;border-radius:10px;padding:12px;text-align:center;cursor:pointer;font-weight:700;font-size:14px;color:#14212b}
-.role-switch input {margin-right:7px}
+.role-switch label{border:1px solid #ddd;border-radius:10px;padding:12px;text-align:center;cursor:pointer;font-weight:700;font-size:14px}
+.role-switch input{margin-right:7px}
 .login-error{background:#fff0f1;color:#9e1c25;padding:11px;border-radius:8px;margin-bottom:14px}
-.signup-note{font-size:13px;text-align:center;margin-top:15px;color:#14212b}
-.signup-note a{color:#d71920;font-weight:700;text-decoration:none}
-
-@media(max-width:1100px){
-  .about-grid-inner {grid-template-columns:1fr;gap:30px;text-align:center}
-  .about-content h3::after {margin:8px auto 0}
-  .founder-img-large {max-width:240px}
-  .social-links {margin: 0 auto}
-}
-@media(max-width:950px){
-  .landing .hero-public{grid-template-columns:1fr;gap:45px}
-  .login-card{max-width:100%;position:static}
-  .ad-grid{grid-template-columns:1fr;padding-bottom:45px}
-}
+.signup-note{font-size:13px;text-align:center;margin-top:15px}
+.signup-note a{color:#d71920;font-weight:700}
 </style>
 </head>
 <body class="landing">
@@ -145,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
       <!-- Inner Two-Column Layout for Founder Image (Left) & About Content (Right) -->
       <div class="about-grid-inner">
         
-        <!-- Left Side: Large Portrait, Name Details & Vertical Social List -->
+        <!-- Left Side: Large Portrait & Name Details -->
         <div class="founder-image-wrapper">
           <img src="<?=base_url('assets/images/founder.jpg')?>" alt="Founder of Odynasties" class="founder-img-large" onerror="this.src='https://placeholder.com';">
           <div class="founder-title">
@@ -153,21 +137,54 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
             Founder, Odynasties
           </div>
 
-          <!-- Connect with Us Module - Re-engineered for Vertical Alignment -->
+          <!-- Connect with Us Module -->
           <div class="connect-container">
             <div class="connect-title">Connect with Us</div>
             <div class="social-links">
-              <!-- WhatsApp -->
-              <a href="https://wa.me" class="social-btn" target="_blank" title="WhatsApp">
-                <svg viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.411 0 11.983 0c3.184.001 6.177 1.24 8.43 3.496 2.254 2.256 3.491 5.253 3.487 8.437-.01 6.533-5.362 11.88-11.93 11.88-2.005-.002-3.975-.51-5.728-1.478L0 24zm6.152-3.568c1.644.975 3.25 1.484 4.833 1.488 5.41.002 9.814-4.383 9.822-9.775.004-2.612-1.012-5.066-2.863-6.92C16.141 3.37 13.699 2.353 11.1 2.351c-5.421 0-9.833 4.393-9.841 9.788-.002 1.674.453 3.31 1.317 4.733l-.99 3.613 3.693-.969zm13.14-5.467c-.29-.146-1.71-.844-1.973-.938-.264-.093-.456-.14-.648.147-.192.287-.743.938-.91 1.124-.167.187-.334.21-.624.065-.29-.145-1.224-.45-2.33-1.439-.862-.77-1.443-1.72-1.612-2.011-.168-.293-.018-.452.127-.597.13-.132.29-.34.436-.509.145-.17.192-.284.29-.475.097-.19.047-.356-.024-.5-.072-.146-.648-1.56-.887-2.132-.233-.56-.47-.484-.648-.493-.168-.008-.36-.01-.552-.01-.192 0-.504.071-.768.356-.264.288-1.008.985-1.008 2.404 0 1.42 1.032 2.788 1.177 2.98.145.195 2.03 3.093 4.916 4.34.687.296 1.224.474 1.643.607.69.219 1.319.19 1.816.115.553-.083 1.71-.699 1.952-1.374.24-.675.24-1.253.168-1.375-.071-.122-.264-.194-.555-.339z"/></svg>
-                <span>WhatsApp</span>
-              </a>
-              
-              <!-- Email -->
-              <a href="mailto:your-email@odynasties.com" class="social-btn" title="Email">
-                <svg viewBox="0 0 24 24"><path d="M0 3v18h24v-18h-24zm21.518 2l-9.518 7.713-9.518-7.713h19.036zm-19.518 14v-11.817l10 8.104 10-8.104v11.817h-20z"/></svg>
-                <span>Email Address</span>
-              </a>
-              
-              <!-- Facebook -->
-              <a href="https://facebook.com" class="social-btn" target="_blank" title="Facebook">
+              <a href="https://wa.me" class="social-btn" target="_blank" title="WhatsApp">WA</a>
+              <a href="mailto:your-email@odynasties.com" class="social-btn" title="Email">@</a>
+              <a href="https://facebook.com" class="social-btn" target="_blank" title="Facebook">FB</a>
+              <a href="https://tiktok.com" class="social-btn" target="_blank" title="TikTok">TT</a>
+              <a href="tel:+YOURPHONENUMBER" class="social-btn" title="Phone">📞</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side: The Narrative Text -->
+        <div class="about-content">
+          <h1>One Blood Group.<br>One Community.<br>One Dynasty.</h1>
+          
+          <h3>The Meaning & Origin</h3>
+          <p>
+            The name <strong>Odynasties</strong> represents the lineage, unity, and strength shared by those with the Type O blood group. Often recognized as universal blood donors, Type O individuals possess a unique biological connection that enables them to sustain lives across the globe. Our name celebrates this shared legacy as a global family—a dynasty built on compassion and shared responsibility.
+          </p>
+          
+          <h3>Our Journey & History</h3>
+          <p>
+            Founded with a vision to transform a shared biological trait into a support engine, Odynasties began as a network of dedicated individuals. We recognized that while Type O blood is always in high demand, finding reliable, local donor connections during unexpected emergencies presented constant challenges. 
+          </p>
+          <p>
+            What started as an urgent initiative has evolved into an integrated, interactive system. Today, Odynasties bridges modern web technology with grassroots healthcare outreach, ensuring that our collective strength is accessible to members whenever and wherever they need support.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Right Column: Login Card Container -->
+    <section class="login-card">
+      <h2>Sign in to Odynasties</h2>
+      <p class="muted">Choose how you are registered before signing in.</p>
+      <?php if($error): ?><div class="login-error"><?=e($error)?></div><?php endif; ?>
+      <form method="post">
+        <div class="field">
+          <label>Login as</label>
+          <div class="role-switch">
+            <label><input type="radio" name="login_as" value="member" checked> Member</label>
+            <label><input type="radio" name="login_as" value="admin"> Administrator</label>
+          </div>
+        </div>
+        <div class="field"><label>Email</label><input type="email" name="email" required autocomplete="username"></div>
+        <div class="field"><label>Password</label><input type="password" name="password" required autocomplete="current-password"></div>
+        <button class="btn" style="width:100%">Sign In</button>
+      </form>
