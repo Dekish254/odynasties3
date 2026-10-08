@@ -27,8 +27,8 @@ if ($amount < 10 || strlen($phone) !== 12) {
 }
 
 // 2. Safaricom M-Pesa Sandbox Configurations (Swap these strings out when going to live production)
-$consumerKey       = "EylQTLPr7uw3xlhDubzQLLqsB1DLzvWH"; 
-$consumerSecret    = "mgKpS0fDl8ukOfpp";
+$consumerKey       = "0BGR1e6rEcAwNYMOe63d52eooY65BGf6VnngE3W63Auikeou"; 
+$consumerSecret    = "zj6VR3DFbUjQ21GF0etnKAyLbbSMtGYI9tOG0un8e9AVRQOI12MIxMuSdR0GtI1Y";
 $businessShortCode = "174379"; // Safaricom Sandbox testing Till/Paybill number
 $passkey           = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919"; // Sandbox Passkey
 
