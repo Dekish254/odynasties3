@@ -8,7 +8,7 @@ require 'config/config.php';
 require_member(); // Safeguard: Block unauthenticated traffic
 
 // =========================================================================
-// 🚨 AUTOMATED SELF-INSTALLING DATABASE MAPPING LAYER (BYPASSES TERMINAL)
+// ⚡ AUTOMATED SELF-INSTALLING DATABASE MAPPING LAYER (BYPASSES TERMINAL)
 // =========================================================================
 try {
     \$autoInstallQuery = "
