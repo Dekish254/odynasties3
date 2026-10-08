@@ -31,12 +31,12 @@ if ($amount < 10 || strlen($phone) !== 12) {
 }
 
 // =============================================================
-// YOUR APPROVED LIVE PRODUCTION BUY GOODS (TILL) CREDENTIALS
+// 2. YOUR APPROVED LIVE PRODUCTION BUY GOODS (TILL) CREDENTIALS
 // =============================================================
 $consumerKey       = "bFuQg4fqHajr7VrG1umNX1XR63Y565AJM5Vs0sjGDcXbzphc"; 
 $consumerSecret    = "zL7NqOw5H3di8cEfGkNXoGvr4MAzaFiwnDsFc7SCRsiEGQX2r6QZaWrv4PL2GNiv";
-$storeNumber       = "6280635"; // Your explicit M-Pesa Buy Goods Till Number
-$passkey           = "75fc730afea19a3765dffb3465daa94fa1cb19668476ed2acefad1045a57c3a1"; // Your production passkey
+$storeNumber       = "6280635"; // Your approved Buy Goods Till Number
+$passkey           = "75fc730afea19a3765dffb3465daa94fa1cb19668476ed2acefad1045a57c3a1"; // Your live production passkey
 
 $businessShortCode = $storeNumber; 
 $timestamp = date('YmdHis');
@@ -47,7 +47,7 @@ $accountReference = "Odynasties";
 $transactionDesc  = "Project Funding Support";
 
 // =============================================================
-// BACKEND STEP 1: GENERATE PRODUCTION ACCESS TOKEN WITH BROWSER HEADERS
+// BACKEND STEP 1: GENERATE PRODUCTION ACCESS TOKEN (FIXED ENDPOINT URL)
 // =============================================================
 $authUrl = "https://safaricom.co.ke";
 $credentials = base64_encode(trim($consumerKey) . ":" . trim($consumerSecret));
@@ -65,9 +65,8 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HEADER, false);
 
-// CRITICAL: Mimics a real web browser user agent to bypass Safaricom's cloud hosting blacklist rules
+// Mimics a real browser user agent to bypass data-center proxy filters
 curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
-
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 curl_setopt($ch, CURLOPT_TIMEOUT, 30); 
@@ -86,11 +85,11 @@ $authResponse = json_decode($rawResponse, true);
 $accessToken = $authResponse['access_token'] ?? null;
 
 if (!$accessToken) {
-    die("<h3>Safaricom API Token Error</h3><pre>" . print_r($authResponse, true) . "</pre>");
+    die("<h3>Safaricom API Token Error — Live Diagnostics</h3><pre>" . print_r($authResponse, true) . "</pre><br><strong>Raw Response:</strong><br><pre>" . htmlspecialchars($rawResponse) . "</pre>");
 }
 
 // =============================================================
-// BACKEND STEP 2: DISPATCH LIVE M-PESA BUY GOODS STK PUSH PAYLOAD
+// BACKEND STEP 2: DISPATCH LIVE M-PESA BUY GOODS STK PUSH (FIXED ENDPOINT URL)
 // =============================================================
 $stkUrl = "https://safaricom.co.ke";
 
@@ -98,7 +97,7 @@ $curl_post_data = [
     'BusinessShortCode' => $businessShortCode,
     'Password'          => $password,
     'Timestamp'         => $timestamp,
-    'TransactionType'   => 'CustomerBuyGoodsOnline', // Configured explicitly for your Store Till
+    'TransactionType'   => 'CustomerBuyGoodsOnline', // Enforced strictly for Buy Goods Tills
     'Amount'            => $amount,
     'PartyA'            => $phone, 
     'PartyB'            => $storeNumber, 
@@ -119,7 +118,6 @@ curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($curl_post_data));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-// Pass browser context parameters to prevent token dropped handshakes
 curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
