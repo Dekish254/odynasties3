@@ -1,5 +1,5 @@
 <?php
-// 1. Clear hidden background blocks and force diagnostics output
+// 1. Force the server to print out hidden backend error variables instead of a blank screen
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -10,46 +10,10 @@ header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json");
 
 // =========================================================================
-// ⚡ HARDENED REMOTE RAILWAY CONNECTIVITY PIPELINE (PREVENTS GONE AWAY 2006)
-// =========================================================================
-$host     = "junction.proxy.rlwy.net";
-$port     = "10375";
-$user     = "root";
-$password = "OGPjARzHlyssppysTWVWvrsYCszLHRHy";
-$dbname   = "odynasties";
-
-$dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4";
-$options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES   => true, // Forces buffered queries to bypass proxy limits
-    PDO::ATTR_TIMEOUT            => 15,   // Forces a clean connection wait threshold time
-    PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
-];
-
-$pdo = null;
-$max_retries = 3;
-$retry_count = 0;
-
-// Execute automated retry cycle if public proxy drops the network packet
-while ($pdo === null && $retry_count < $max_retries) {
-    try {
-        $pdo = new PDO($dsn, $user, $password, $options);
-    } catch (PDOException $e) {
-        $retry_count++;
-        if ($retry_count >= $max_retries) {
-            die(json_encode([
-                "ResponseCode" => "1", 
-                "ResponseDescription" => "Railway Cloud Proxy is busy. Error: " . $e->getMessage()
-            ]));
-        }
-        usleep(200000); // Wait 200ms before retrying the connection handshake
-    }
-}
+// ⚡ BYPASSED INITIAL HANDSHAKE: Separated database write to prevent timeout
 // =========================================================================
 
-
-// 3. Process the M-Pesa incoming attributes context parameters
+// 2. Process the M-Pesa incoming attributes context parameters
 $amount = (int)($_POST['amount'] ?? 0);
 $phone  = trim($_POST['phone'] ?? '');
 $userId = (int)($_POST['user_id'] ?? 1); // Passes user contextual state identifiers cleanly
@@ -68,7 +32,7 @@ $consumerSecret    = "zL7NqOw5H3di8cEfGkNXoGvr4MAzaFiwnDsFc7SCRsiEGQX2r6QZaWrv4P
 $storeNumber       = "6280635"; 
 $passkey           = "75fc730afea19a3765dffb3465daa94fa1cb19668476ed2acefad1045a57c3a1"; 
 
-// 4. Request Bearer Token (Will pass instantly because your hosting is local to Kenya)
+// 3. Request Bearer Token (Will pass instantly because your hosting is local to Kenya)
 $authUrl = "https://safaricom.co.ke";
 $credentials = base64_encode($consumerKey . ":" . $consumerSecret);
 
@@ -91,7 +55,7 @@ if (!$accessToken) {
     exit;
 }
 
-// 5. Build cryptographically signed values and fire the Production STK Push
+// 4. Build cryptographically signed values and fire the Production STK Push
 $timestamp = date('YmdHis');
 $password  = base64_encode($storeNumber . $passkey . $timestamp);
 $stkUrl    = "https://safaricom.co.ke";
@@ -105,8 +69,8 @@ $curl_post_data = [
     'PartyA'            => $phone,
     'PartyB'            => $storeNumber,
     'PhoneNumber'       => $phone,
-    'CallBackURL'       => "https://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['REQUEST_URI']) . "/mpesa-callback.php",
-    'AccountReference'  => "Odynasties",
+    'CallBackURL'       => "https://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['REQUEST_URI']) . "/mpesa-callback.php", // Points dynamically to callback file on this server
+    'AccountReference'  => "ODY_" . $userId, // Passes your unique user ID inside the account reference token
     'TransactionDesc'   => "Project Funding Support"
 ];
 
@@ -123,14 +87,6 @@ curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 $stkResponse = json_decode(curl_exec($ch), true);
 curl_close($ch);
 
-// 6. Log transaction record directly into your live Railway cloud instance
-if (($stkResponse['ResponseCode'] ?? '') === '0') {
-    $merchantId = $stkResponse['MerchantRequestID'];
-    $checkoutId = $stkResponse['CheckoutRequestID'];
-    
-    $stmt = $pdo->prepare("INSERT INTO project_donations (user_id, phone_number, amount, merchant_request_id, checkout_request_id, status) VALUES (?, ?, ?, ?, ?, 'PENDING')");
-    $stmt->execute([$userId, $phone, $amount, $merchantId, $checkoutId]);
-}
-
+// Output the final Safaricom response back to your client-side interface layout
 echo json_encode($stkResponse);
 ?>
