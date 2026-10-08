@@ -41,16 +41,50 @@ $callbackUrl = base_url('mpesa-callback.php');
 $accountReference = "Odynasties";
 $transactionDesc  = "Project Funding Support";
 
-// 3. Request a secure Bearer Authorization Token via cURL from Safaricom's cloud servers
+// ==========================================
+// 3. REPAIRED SECURE AUTHENTICATION TOKEN CHANNEL
+// ==========================================
 $authUrl = "https://safaricom.co.ke";
-$ch = curl_init($authUrl);
-curl_setopt($ch, CURLOPT_HTTPHEADER, ['Authorization: Basic ' . base64_encode($consumerKey . ':' . $consumerSecret)]);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-$authResponse = json_decode(curl_exec($ch), true);
-curl_close($ch);
 
+// Concatenate and completely trim keys to eliminate unintended spaces
+$credentials = base64_encode(trim($consumerKey) . ":" . trim($consumerSecret));
+
+$headers = [
+    "Authorization: Basic " . $credentials,
+    "Content-Type: application/json",
+    "Accept: application/json"
+];
+
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $authUrl);
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_HEADER, false);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Bypasses local SSL check boundaries
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
+$rawResponse = curl_exec($ch);
+
+// Catch background server connection locks instantly
+if ($rawResponse === false) {
+    $curlError = curl_error($ch);
+    curl_close($ch);
+    die("Server connectivity blockade encountered. cURL Error: " . htmlspecialchars($curlError));
+}
+
+curl_close($ch);
+$authResponse = json_decode($rawResponse, true);
 $accessToken = $authResponse['access_token'] ?? null;
+
+// Detailed Diagnostics to point you directly to the exact platform mismatch
+if (!$accessToken) {
+    $errorMessage = $authResponse['errorMessage'] ?? 'Invalid Credentials or Revoked App State';
+    die("<h3>M-Pesa API Handshake Failed</h3>" .
+        "<strong>Safaricom Gateway Response:</strong> " . htmlspecialchars($errorMessage) . "<br>" .
+        "<strong>Suggestions:</strong> Make sure you are using <u>Sandbox Keys</u> for the sandbox URL. " .
+        "If you are launching live, your URL must be changed to <em>api.safaricom.co.ke</em>.");
+}
+
 
 if (!$accessToken) {
     die("Error: Failed to fetch secure authentication token from M-Pesa API endpoint. Double-check Consumer Keys.");
