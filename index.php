@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
 /* Main Top Grid Layout */
 .landing .hero-public{display:grid;grid-template-columns:1.25fr .75fr;gap:55px;align-items:start;padding:25px 0 45px}
 
-/* Left Column Styling: Split into Founder Profile on left, Biography on right */
+/* Left Column Layout: Split into Profile Wrapper (Left) and Bio Text (Right) */
 .about-grid-inner {display:grid;grid-template-columns:1fr 1.5fr;gap:40px;align-items:start;margin-top:20px}
 
 /* Large Founder Profile Styles */
@@ -85,14 +85,14 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
 .founder-title {margin-top:15px;font-size:16px;color:#dbe4e8}
 .founder-title strong {display:block;font-size:22px;color:#fff;margin-bottom:2px}
 
-/* Connect with Us Module Styles */
-.connect-container {margin-top:25px;padding-top:15px;border-top:1px solid rgba(255,255,255,.08)}
-.connect-title {font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#a2b4be;margin-bottom:12px}
-.social-links {display:flex;justify-content:center;flex-wrap:wrap;gap:10px}
-.social-btn {display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff;text-decoration:none;font-size:18px;font-weight:bold;transition:all 0.2s ease}
-.social-btn:hover {background:#d71920;border-color:#d71920;transform:translateY(-2px)}
+/* Clean Text-Only Vertical Social Links Container */
+.connect-container {margin-top:25px;padding-top:15px;border-top:1px solid rgba(255,255,255,.08);text-align:left}
+.connect-title {font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#a2b4be;margin-bottom:12px;text-align:center}
+.social-links {display:flex;flex-direction:column;gap:8px;max-width:260px;margin:0 auto}
+.social-btn {display:block;padding:10px 14px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff;text-decoration:none;font-size:14px;font-weight:600;text-align:center;transition:all 0.2s ease}
+.social-btn:hover {background:#d71920;border-color:#d71920;transform:translateX(4px)}
 
-/* Text Content Container */
+/* Text Content Paragraph Elements */
 .about-content h1{font-size:clamp(32px,4vw,44px);line-height:1.1;margin:0 0 20px}
 .about-content h3 {font-size:24px;margin:25px 0 10px;color:#fff;position:relative}
 .about-content h3::after {content:'';display:block;width:40px;height:3px;background:#d71920;margin-top:8px}
@@ -104,15 +104,30 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
 .ad-card b{display:block;font-size:18px;margin-bottom:8px;color:#fff}
 .ad-card span{font-size:14px;line-height:1.5;color:#dbe4e8}
 
-/* Login Side-Card Container */
+/* Sanitized White Login Card Container */
 .login-card{background:#fff;color:#14212b;border-radius:18px;padding:28px;box-shadow:0 18px 50px rgba(0,0,0,.3);position:sticky;top:20px}
-.login-card h2{margin-top:0;font-size:24px}
+.login-card h2{margin-top:0;font-size:24px;color:#14212b}
+.login-card .muted{color:#556675;margin-bottom:15px;font-size:14px}
+.login-card .field {margin-bottom:15px;display:block}
+.login-card .field label {display:block;margin-bottom:5px;font-weight:700;color:#14212b}
+.login-card .field input[type="email"], .login-card .field input[type="password"] {width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;background:#fff;color:#14212b}
 .role-switch{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0 20px}
-.role-switch label{border:1px solid #ddd;border-radius:10px;padding:12px;text-align:center;cursor:pointer;font-weight:700;font-size:14px}
+.role-switch label{border:1px solid #ddd;border-radius:10px;padding:12px;text-align:center;cursor:pointer;font-weight:700;font-size:14px;color:#14212b}
 .role-switch input{margin-right:7px}
 .login-error{background:#fff0f1;color:#9e1c25;padding:11px;border-radius:8px;margin-bottom:14px}
-.signup-note{font-size:13px;text-align:center;margin-top:15px}
-.signup-note a{color:#d71920;font-weight:700}
+.signup-note{font-size:13px;text-align:center;margin-top:15px;color:#14212b}
+.signup-note a{color:#d71920;font-weight:700;text-decoration:none}
+
+@media(max-width:1100px){
+  .about-grid-inner {grid-template-columns:1fr;gap:30px;text-align:center}
+  .about-content h3::after {margin:8px auto 0}
+  .founder-img-large {max-width:240px}
+}
+@media(max-width:950px){
+  .landing .hero-public{grid-template-columns:1fr;gap:45px}
+  .login-card{max-width:100%;position:static}
+  .ad-grid{grid-template-columns:1fr;padding-bottom:45px}
+}
 </style>
 </head>
 <body class="landing">
@@ -125,11 +140,9 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
     
     <!-- Left Column Container: Holds everything next to the Login Card -->
     <section class="about-column-wrapper">
-      
-      <!-- Inner Two-Column Layout for Founder Image (Left) & About Content (Right) -->
       <div class="about-grid-inner">
         
-        <!-- Left Side: Large Portrait & Name Details -->
+        <!-- Left Side: Large Portrait, Name Details & Vertical Link Stack -->
         <div class="founder-image-wrapper">
           <img src="<?=base_url('assets/images/founder.jpg')?>" alt="Founder of Odynasties" class="founder-img-large" onerror="this.src='https://placeholder.com';">
           <div class="founder-title">
@@ -137,20 +150,20 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
             Founder, Odynasties
           </div>
 
-          <!-- Connect with Us Module -->
+          <!-- Clean Text-Only Social Link Stack -->
           <div class="connect-container">
             <div class="connect-title">Connect with Us</div>
             <div class="social-links">
-              <a href="https://wa.me" class="social-btn" target="_blank" title="WhatsApp">WA</a>
-              <a href="mailto:your-email@odynasties.com" class="social-btn" title="Email">@</a>
-              <a href="https://facebook.com" class="social-btn" target="_blank" title="Facebook">FB</a>
-              <a href="https://tiktok.com" class="social-btn" target="_blank" title="TikTok">TT</a>
-              <a href="tel:+YOURPHONENUMBER" class="social-btn" title="Phone">📞</a>
+              <a href="https://wa.me" class="social-btn" target="_blank">WhatsApp</a>
+              <a href="mailto:your-email@odynasties.com" class="social-btn">Email Address</a>
+              <a href="https://facebook.com" class="social-btn" target="_blank">Facebook Page</a>
+              <a href="https://tiktok.com" class="social-btn" target="_blank">TikTok Channel</a>
+              <a href="tel:+YOURPHONENUMBER" class="social-btn">Call Us Directly</a>
             </div>
           </div>
         </div>
 
-        <!-- Right Side: The Narrative Text -->
+        <!-- Right Side: The Narrative History Text -->
         <div class="about-content">
           <h1>One Blood Group.<br>One Community.<br>One Dynasty.</h1>
           
@@ -175,16 +188,4 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
     <section class="login-card">
       <h2>Sign in to Odynasties</h2>
       <p class="muted">Choose how you are registered before signing in.</p>
-      <?php if($error): ?><div class="login-error"><?=e($error)?></div><?php endif; ?>
-      <form method="post">
-        <div class="field">
-          <label>Login as</label>
-          <div class="role-switch">
-            <label><input type="radio" name="login_as" value="member" checked> Member</label>
-            <label><input type="radio" name="login_as" value="admin"> Administrator</label>
-          </div>
-        </div>
-        <div class="field"><label>Email</label><input type="email" name="email" required autocomplete="username"></div>
-        <div class="field"><label>Password</label><input type="password" name="password" required autocomplete="current-password"></div>
-        <button class="btn" style="width:100%">Sign In</button>
-      </form>
+      
