@@ -77,19 +77,22 @@ elseif ($u['role'] !== $role) {
 .landing .brandline img{width:52px;height:52px}
 
 /* Main Top Grid Layout */
-.landing .hero-public{display:grid;grid-template-columns:1.25fr .75fr;gap:45px;align-items:start;padding:25px 0 45px}
+.landing .hero-public{display:grid;grid-template-columns:1.25fr .75fr;gap:55px;align-items:start;padding:25px 0 45px}
 
-/* Left Column Styling */
-.about-block h1{font-size:clamp(32px,4.5vw,48px);line-height:1.1;margin:0 0 25px}
-.about-block h3{font-size:22px;color:#d71920;margin:25px 0 10px}
-.about-block p{font-size:16px;line-height:1.6;color:#dbe4e8;margin-bottom:15px}
+/* Left Column Styling: Split into Founder Profile on left, Biography on right */
+.about-grid-inner {display:grid;grid-template-columns:1fr 1.5fr;gap:40px;align-items:start;margin-top:20px}
 
-/* Enhanced Top Founder Showcase Layout */
-.founder-showcase {display:flex;align-items:center;gap:25px;background:linear-gradient(135deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,.01) 100%);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:25px;margin-bottom:30px;box-shadow:0 10px 30px rgba(0,0,0,0.15)}
-.founder-img-big {width:120px;height:120px;object-fit:cover;border-radius:50%;border:3px solid #d71920;box-shadow:0 4px 15px rgba(215,25,32,0.3);flex-shrink:0}
-.founder-meta strong {display:block;font-size:24px;color:#fff;margin-bottom:4px;letter-spacing:-0.5px}
-.founder-meta .title-badge {display:inline-block;background:#d71920;color:#fff;font-size:12px;font-weight:700;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-bottom:6px}
-.founder-meta p {font-size:14px;color:#a2b4be;margin:0;line-height:1.4}
+/* Large Founder Profile Styles (Restored from iteration 1) */
+.founder-image-wrapper {text-align:center}
+.founder-img-large {width:100%;max-width:320px;height:auto;aspect-ratio:1/1;object-fit:cover;border-radius:50%;border:4px solid #d71920;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.founder-title {margin-top:15px;font-size:16px;color:#dbe4e8}
+.founder-title strong {display:block;font-size:22px;color:#fff;margin-bottom:2px}
+
+/* Text Content Container */
+.about-content h1{font-size:clamp(32px,4vw,44px);line-height:1.1;margin:0 0 20px}
+.about-content h3 {font-size:24px;margin:25px 0 10px;color:#fff;position:relative}
+.about-content h3::after {content:'';display:block;width:40px;height:3px;background:#d71920;margin-top:8px}
+.about-content p {font-size:16px;line-height:1.7;color:#dbe4e8;margin-bottom:15px}
 
 /* Bottom Grid for Value Proposition Cards */
 .ad-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:35px 0 75px;border-top:1px solid rgba(255,255,255,.08)}
@@ -107,13 +110,15 @@ elseif ($u['role'] !== $role) {
 .signup-note{font-size:13px;text-align:center;margin-top:15px}
 .signup-note a{color:#d71920;font-weight:700}
 
+@media(max-width:1100px){
+  .about-grid-inner {grid-template-columns:1fr;gap:30px;text-align:center}
+  .about-content h3::after {margin:8px auto 0}
+  .founder-img-large {max-width:240px}
+}
 @media(max-width:950px){
-  .landing .hero-public{grid-template-columns:1fr;gap:35px}
+  .landing .hero-public{grid-template-columns:1fr;gap:45px}
   .login-card{max-width:100%;position:static}
   .ad-grid{grid-template-columns:1fr;padding-bottom:45px}
-}
-@media(max-width:480px){
-  .founder-showcase {flex-direction:column;text-align:center;padding:20px}
 }
 </style>
 </head>
@@ -125,33 +130,41 @@ elseif ($u['role'] !== $role) {
 <main class="container">
   <div class="hero-public">
     
-    <!-- Left Column: High-Visibility Founder Intro followed by Narrative History -->
-    <section class="about-block">
-      <h1>One Blood Group.<br>One Community.<br>One Dynasty.</h1>
+    <!-- Left Column Container: Holds everything next to the Login Card -->
+    <section class="about-column-wrapper">
       
-      <!-- Top High-Visibility Founder Showcase -->
-      <div class="founder-showcase">
-        <!-- UPDATE PATH: Replace 'assets/images/founder.jpg' with your real image source file -->
-        <img src="<?=base_url('assets/images/founder.jpg')?>" alt="Founder of Odynasties" class="founder-img-big" onerror="this.src='https://placeholder.com';">
-        <div class="founder-meta">
-          <span class="title-badge">Founder & Visionary</span>
-          <strong>[Founder's Full Name]</strong>
-          <p>Architect of the Odynasties network and global community platform.</p>
+      <!-- Inner Two-Column Layout for Founder Image (Left) & About Content (Right) -->
+      <div class="about-grid-inner">
+        
+        <!-- Left Side: Large Portrait & Name Details (Original Size) -->
+        <div class="founder-image-wrapper">
+          <!-- UPDATE PATH: Replace 'assets/images/founder.jpg' with your real image source file -->
+          <img src="<?=base_url('assets/images/founder.jpg')?>" alt="Founder of Odynasties" class="founder-img-large" onerror="this.src='https://placeholder.com';">
+          <div class="founder-title">
+            <strong>[Founder's Full Name]</strong>
+            Founder, Odynasties
+          </div>
         </div>
-      </div>
 
-      <h3>Welcome to Odynasties</h3>
-      <p>
-        The name <strong>Odynasties</strong> represents the lineage, unity, and strength shared by those with the Type O blood group. Often recognized as universal blood donors, Type O individuals possess a unique biological connection that enables them to sustain lives across the globe. Our name celebrates this shared legacy as a global family—a dynasty built on compassion and shared responsibility.
-      </p>
-      
-      <h3>Our Journey & History</h3>
-      <p>
-        Founded with a vision to transform a shared biological trait into a support engine, Odynasties began as a network of dedicated individuals. We recognized that while Type O blood is always in high demand, finding reliable, local donor connections during unexpected emergencies presented constant challenges. 
-      </p>
-      <p>
-        What started as an urgent initiative has evolved into an integrated, interactive system. Today, Odynasties bridges modern web technology with grassroots healthcare outreach, ensuring that our collective strength is accessible to members whenever and wherever they need support.
-      </p>
+        <!-- Right Side: The Narrative Text -->
+        <div class="about-content">
+          <h1>One Blood Group.<br>One Community.<br>One Dynasty.</h1>
+          
+          <h3>The Meaning & Origin</h3>
+          <p>
+            The name <strong>Odynasties</strong> represents the lineage, unity, and strength shared by those with the Type O blood group. Often recognized as universal blood donors, Type O individuals possess a unique biological connection that enables them to sustain lives across the globe. Our name celebrates this shared legacy as a global family—a dynasty built on compassion and shared responsibility.
+          </p>
+          
+          <h3>Our Journey & History</h3>
+          <p>
+            Founded with a vision to transform a shared biological trait into a support engine, Odynasties began as a network of dedicated individuals. We recognized that while Type O blood is always in high demand, finding reliable, local donor connections during unexpected emergencies presented constant challenges. 
+          </p>
+          <p>
+            What started as an urgent initiative has evolved into an integrated, interactive system. Today, Odynasties bridges modern web technology with grassroots healthcare outreach, ensuring that our collective strength is accessible to members whenever and wherever they need support.
+          </p>
+        </div>
+
+      </div>
     </section>
 
     <!-- Right Column: Login Card Container -->
