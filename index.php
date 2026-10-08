@@ -183,7 +183,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <?php endif; ?>
       
       <form method="post">
-        <div class="field">
-          <label>Login as</label>
-          <div class="role-switch">
-            <label><input type="radio" name="login_as" value="member" checked> Member</label>
+      <div class="field">
+        <label>Login as</label>
+        <div class="role-switch">
+          <label><input type="radio" name="login_as" value="member" checked> Member</label>
+          <label><input type="radio" name="login_as" value="admin"> Administrator</label>
+        </div>
+      </div>
+      <div class="field"><label>Email</label><input type="email" name="email" required autocomplete="username"></div>
+      <div class="field"><label>Password</label><input type="password" name="password" required autocomplete="current-password"></div>
+      <button class="btn" style="width:100%">Sign In</button>
+    </form>
+    <div class="signup-note">Not registered as a member? <a href="register.php">Sign up here</a></div>
+    <div class="signup-note">Administrator accounts are created or promoted by an existing administrator.</div>
+  </section>
+</main>
+</body>
+</html>
