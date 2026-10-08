@@ -9,7 +9,9 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json");
 
-// 2. Establish a direct secure connection to your live active database on Railway
+// =========================================================================
+// ⚡ HARDENED REMOTE RAILWAY CONNECTIVITY PIPELINE (PREVENTS GONE AWAY 2006)
+// =========================================================================
 $host     = "junction.proxy.rlwy.net";
 $port     = "10375";
 $user     = "root";
@@ -17,15 +19,35 @@ $password = "OGPjARzHlyssppysTWVWvrsYCszLHRHy";
 $dbname   = "odynasties";
 
 $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4";
-try {
-    $pdo = new PDO($dsn, $user, $password, [
-        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_EMULATE_PREPARES   => true
-    ]);
-} catch (PDOException $e) {
-    die(json_encode(["ResponseCode" => "1", "ResponseDescription" => "Railway Cloud connection breakdown: " . $e->getMessage()]));
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => true, // Forces buffered queries to bypass proxy limits
+    PDO::ATTR_TIMEOUT            => 15,   // Forces a clean connection wait threshold time
+    PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
+];
+
+$pdo = null;
+$max_retries = 3;
+$retry_count = 0;
+
+// Execute automated retry cycle if public proxy drops the network packet
+while ($pdo === null && $retry_count < $max_retries) {
+    try {
+        $pdo = new PDO($dsn, $user, $password, $options);
+    } catch (PDOException $e) {
+        $retry_count++;
+        if ($retry_count >= $max_retries) {
+            die(json_encode([
+                "ResponseCode" => "1", 
+                "ResponseDescription" => "Railway Cloud Proxy is busy. Error: " . $e->getMessage()
+            ]));
+        }
+        usleep(200000); // Wait 200ms before retrying the connection handshake
+    }
 }
+// =========================================================================
+
 
 // 3. Process the M-Pesa incoming attributes context parameters
 $amount = (int)($_POST['amount'] ?? 0);
