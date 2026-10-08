@@ -104,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
 .ad-card b{display:block;font-size:18px;margin-bottom:8px;color:#fff}
 .ad-card span{font-size:14px;line-height:1.5;color:#dbe4e8}
 
-/* Sanitized White Login Card Container */
+/* White Login Card Container */
 .login-card{background:#fff;color:#14212b;border-radius:18px;padding:28px;box-shadow:0 18px 50px rgba(0,0,0,.3);position:sticky;top:20px}
 .login-card h2{margin-top:0;font-size:24px;color:#14212b}
 .login-card .muted{color:#556675;margin-bottom:15px;font-size:14px}
@@ -150,7 +150,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
             Founder, Odynasties
           </div>
 
-          <!-- Clean Text-Only Social Link Stack -->
+          <!-- Text-Only Social Link Stack -->
           <div class="connect-container">
             <div class="connect-title">Connect with Us</div>
             <div class="social-links">
@@ -189,3 +189,4 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
       <h2>Sign in to Odynasties</h2>
       <p class="muted">Choose how you are registered before signing in.</p>
       
+      <?php if($error): ?>
