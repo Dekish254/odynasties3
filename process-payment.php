@@ -43,8 +43,9 @@ $accountReference = "Odynasties";
 $transactionDesc  = "Project Funding Support";
 
 // ==========================================
-// 3. PRODUCTION OAUTH TOKEN FETCH (HTTPS/443)
-// ==========================================
+// =============================================================
+// 3. FIXED DIAGNOSTIC PRODUCTION OAUTH TOKEN FETCH (FORCED PRINT)
+// =============================================================
 $authUrl = "https://safaricom.co.ke";
 $credentials = base64_encode(trim($consumerKey) . ":" . trim($consumerSecret));
 
@@ -60,8 +61,6 @@ curl_setopt($ch, CURLOPT_PORT, 443);
 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HEADER, false);
-
-// Disables strict server certificate matching which causes silent crashes on Railway cloud nodes
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 curl_setopt($ch, CURLOPT_TIMEOUT, 30); 
@@ -70,20 +69,24 @@ $rawResponse = curl_exec($ch);
 
 if ($rawResponse === false) {
     $curlError = curl_error($ch);
-    $curlErrno = curl_errno($ch);
     curl_close($ch);
-    die("<h3>Outbound Connection Blocked</h3>" .
-        "<strong>cURL Error [No. $curlErrno]:</strong> " . htmlspecialchars($curlError) . "<br>" .
-        "<strong>Reason:</strong> Railway is blocked by Safaricom's firewalls. Please configure an egress proxy or migrate payment endpoints to local Kenyan hosting.");
+    die("<h3>Outbound Connection Failed</h3>" . htmlspecialchars($curlError));
 }
 
 curl_close($ch);
+
+// FORCE RAW DUMP: This breaks past the token error text to show the exact server error array
+if (empty($rawResponse) || strpos($rawResponse, 'access_token') === false) {
+    die("<h3>Safaricom Raw Error Log Diagnostic</h3>" .
+        "<strong>Raw Server Output:</strong> <pre>" . htmlspecialchars($rawResponse) . "</pre><br>" .
+        "<strong>What to look for:</strong><br>" .
+        "1. If it says <em>\"Invalid Credentials\"</em>, your keys are sandbox keys or copy-pasted wrong.<br>" .
+        "2. If it is an HTML error page saying <em>\"403 Forbidden\"</em> or <em>\"Access Denied\"</em>, Safaricom's firewall is blocking your Railway IP range.");
+}
+
 $authResponse = json_decode($rawResponse, true);
 $accessToken = $authResponse['access_token'] ?? null;
 
-if (!$accessToken) {
-    die("<h3>Safaricom API Token Error</h3><pre>" . print_r($authResponse, true) . "</pre>");
-}
 
 // ==========================================
 // 4. FIRE PRODUCTION LIVE STK PUSH REQUEST
