@@ -46,6 +46,8 @@ $transactionDesc  = "Project Funding Support";
 // =============================================================
 // =============================================================
 // REPAIRED SECURE LIVE OAUTH HANDSHAKE (NO DUMMY PROXIES)
+/// =============================================================
+// REPAIRED SECURE LIVE OAUTH HANDSHAKE (WITH VALID PROXY CONFIG)
 // =============================================================
 $authUrl = "https://safaricom.co.ke";
 $credentials = base64_encode(trim($consumerKey) . ":" . trim($consumerSecret));
@@ -58,18 +60,25 @@ $headers = [
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $authUrl);
-
-// Explicitly bind the network port to secure decimal format 443
-curl_setopt($ch, CURLOPT_PORT, 443); 
-
+curl_setopt($ch, CURLOPT_PORT, 443); // Enforce secure connection on port 443
 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HEADER, false);
 
-// Explicitly ensure no empty or corrupted proxy string configs can hijack this request block
-curl_setopt($ch, CURLOPT_PROXY, ""); 
+// =============================================================
+// 🚨 CRITICAL PROXY ASSIGNMENT BLOCK 
+// Replace the values below with your real, live proxy account credentials
+// =============================================================
+$proxy_ip   = "YOUR_PROXY_SERVER_OR_IP";   // e.g., "://egress.com" or "194.23.44.12"
+$proxy_port = 8080;                       // Replace with your real numeric decimal proxy port (0-65535)
+$proxy_auth = "username:password";        // Replace with your actual proxy account authentication credentials
 
-// Disable strict certificate bundles to stop invisible crashes on Railway cloud nodes
+curl_setopt($ch, CURLOPT_PROXY, $proxy_ip);
+curl_setopt($ch, CURLOPT_PROXYPORT, $proxy_port);
+curl_setopt($ch, CURLOPT_PROXYUSERPWD, $proxy_auth);
+// =============================================================
+
+// Disable strict local certificate matching to prevent invisible crashes on Railway cloud nodes
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 curl_setopt($ch, CURLOPT_TIMEOUT, 30); 
@@ -80,9 +89,9 @@ if ($rawResponse === false) {
     $curlError = curl_error($ch);
     $curlErrno = curl_errno($ch);
     curl_close($ch);
-    die("<h3>Outbound Connection Failed</h3>" .
+    die("<h3>Outbound Connection Failed via Proxy</h3>" .
         "<strong>cURL Error [No. $curlErrno]:</strong> " . htmlspecialchars($curlError) . "<br>" .
-        "<strong>Reason:</strong> Connection timed out. Your cloud server is blocked by Safaricom's firewalls.");
+        "<strong>Reason:</strong> Your proxy server could not resolve or route the connection to Safaricom's network.");
 }
 
 curl_close($ch);
