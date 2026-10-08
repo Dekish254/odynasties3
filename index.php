@@ -135,7 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="founder-image-wrapper">
           <img src="<?=base_url('assets/images/founder.jpg')?>" alt="Founder of Odynasties" class="founder-img-large" onerror="this.src='https://placeholder.com';">
           <div class="founder-title">
-            <strong>[Founder's Full Name]</strong>
+            <strong>Apostle Emmanuel Nzuki</strong>
             Founder, Odynasties
           </div>
 
