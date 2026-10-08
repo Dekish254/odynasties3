@@ -30,8 +30,8 @@ if ($amount < 10 || strlen($phone) !== 12) {
 // ==========================================
 // 2. YOUR APPROVED LIVE PRODUCTION CREDENTIALS
 // ==========================================
-$consumerKey       = "3B91FGqA6qxUVKL5vXQ8Sd1oqSA9H1vQFWPPopsYQQhHPZnc"; 
-$consumerSecret    = "dqANw2odXYFmDhac0wqpee3gBPFQ3w1UpIqEbiSxnzTw1rSQpEJlAecjQDhp1H1P";
+$consumerKey       = trim("3B91FGqA6qxUVKL5vXQ8Sd1oqSA9H1vQFWPPopsYQQhHPZnc"); 
+$consumerSecret    = trim("dqANw2odXYFmDhac0wqpee3gBPFQ3w1UpIqEbiSxnzTw1rSQpEJlAecjQDhp1H1P");
 $businessShortCode = "7122120"; // Your live approved number
 $passkey           = "ed3513511649cc0565e6b9e843ddef6947731076df3cb552a7a4eefc8bc7b4fc"; // Your production passkey
 
