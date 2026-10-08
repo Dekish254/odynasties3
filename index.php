@@ -147,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <a href="mailto:your-email@odynasties.com" class="social-btn">Email Address</a>
               <a href="https://facebook.com" class="social-btn" target="_blank">Facebook Page</a>
               <a href="https://tiktok.com" class="social-btn" target="_blank">TikTok Channel</a>
-              <a href="+254758676624" class="social-btn">Call Us Directly</a>
+              <a href="Tel:+254758676624" class="social-btn">Call Us Directly</a>
             </div>
           </div>
         </div>
