@@ -133,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
         <div class="founder-image-wrapper">
           <img src="<?=base_url('assets/images/founder.jpg')?>" alt="Founder of Odynasties" class="founder-img-large" onerror="this.src='https://placeholder.com';">
           <div class="founder-title">
-            <strong>[Founder's Full Name]</strong>
+            <strong>Apostle Emmanuel Nzuki</strong>
             Founder, Odynasties
           </div>
 
@@ -141,11 +141,11 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
           <div class="connect-container">
             <div class="connect-title">Connect with Us</div>
             <div class="social-links">
-              <a href="https://wa.me" class="social-btn" target="_blank" title="WhatsApp">WA</a>
-              <a href="mailto:your-email@odynasties.com" class="social-btn" title="Email">@</a>
+              <a href="https://chat.whatsapp.com/Gle1AaexXViBoOvWY1kDea" class="social-btn" target="_blank" title="WhatsApp">WA</a>
+              <a href="mailto:your-admin@odynasties.com" class="social-btn" title="Email">@</a>
               <a href="https://facebook.com" class="social-btn" target="_blank" title="Facebook">FB</a>
               <a href="https://tiktok.com" class="social-btn" target="_blank" title="TikTok">TT</a>
-              <a href="tel:+YOURPHONENUMBER" class="social-btn" title="Phone">📞</a>
+              <a href="tel:+0758676624" class="social-btn" title="Phone">📞</a>
             </div>
           </div>
         </div>
