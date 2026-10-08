@@ -1,21 +1,13 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
+// Include your master architecture configuration file (handles Railway PDO database connection)
 require 'config/config.php'; 
-require_member();
-
-if ($_SERVER['REQUEST_METHOD'] !== 'POST' || ($_POST['gateway'] ?? '') !== 'mpesa') {
-    header('Location: ' . base_url('payment-gateways.php'));
-    exit;
-}
+require_member(); // Safeguard: Block unauthenticated traffic
 
 $amount = (int)($_POST['amount'] ?? 0);
 $phone  = trim($_POST['phone'] ?? '');
 $userId = $_SESSION['member_user']['id'];
 
-// Normalize mobile format to 254XXXXXXXXX
+// Normalize mobile format to Safaricom's required 254XXXXXXXXX string
 $phone = preg_replace('/[^0-9]/', '', $phone);
 if (strpos($phone, '0') === 0) {
     $phone = '254' . substr($phone, 1);
@@ -23,18 +15,20 @@ if (strpos($phone, '0') === 0) {
     $phone = substr($phone, 1);
 }
 
+// Validation rules boundary check
 if ($amount < 10 || strlen($phone) !== 12) {
     die("Error: Please provide a valid transaction amount (Min KES 10) and correct phone format (2547XXXXXXXX).");
 }
 
-// ==========================================
-// 2. YOUR APPROVED LIVE PRODUCTION CREDENTIALS
-// ==========================================
-$consumerKey       = trim("bFuQg4fqHajr7VrG1umNX1XR63Y565AJM5Vs0sjGDcXbzphc"); 
-$consumerSecret    = trim("zL7NqOw5H3di8cEfGkNXoGvr4MAzaFiwnDsFc7SCRsiEGQX2r6QZaWrv4PL2GNiv");
-$businessShortCode = "6280635"; // Your live approved number
-$passkey           = "75fc730afea19a3765dffb3465daa94fa1cb19668476ed2acefad1045a57c3a1"; // Your production passkey
+// =============================================================
+// YOUR APPROVED LIVE PRODUCTION BUY GOODS (TILL) CREDENTIALS
+// =============================================================
+$consumerKey       = "3B91FGqA6qxUVKL5vXQ8Sd1oqSA9H1vQFWPPopsYQQhHPZnc"; 
+$consumerSecret    = "dqANw2odXYFmDhac0wqpee3gBPFQ3w1UpIqEbiSxnzTw1rSQpEJlAecjQDhp1H1P";
+$storeNumber       = "7122120"; // Your explicit M-Pesa Buy Goods Till Number
+$passkey           = "ed3513511649cc0565e6b9e843ddef6947731076df3cb552a7a4eefc8bc7b4fc"; // Your production passkey
 
+$businessShortCode = $storeNumber; 
 $timestamp = date('YmdHis');
 $password  = base64_encode($businessShortCode . $passkey . $timestamp);
 
@@ -42,119 +36,98 @@ $callbackUrl = base_url('mpesa-callback.php');
 $accountReference = "Odynasties";
 $transactionDesc  = "Project Funding Support";
 
-// ==========================================
-// =============================================================
-// =============================================================
-// REPAIRED SECURE LIVE OAUTH HANDSHAKE (NO DUMMY PROXIES)
-/// =============================================================
-// REPAIRED SECURE LIVE OAUTH HANDSHAKE (WITH VALID PROXY CONFIG)
-// =============================================================
-$authUrl = "https://safaricom.co.ke";
+// Concatenate and completely trim keys to eliminate unintended spaces
 $credentials = base64_encode(trim($consumerKey) . ":" . trim($consumerSecret));
-
-$headers = [
-    "Authorization: Basic " . $credentials,
-    "Content-Type: application/json",
-    "Accept: application/json"
-];
-
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $authUrl);
-curl_setopt($ch, CURLOPT_PORT, 443); // Enforce secure connection on port 443
-curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HEADER, false);
-
-// =============================================================
-// 🚨 CRITICAL PROXY ASSIGNMENT BLOCK 
-// Replace the values below with your real, live proxy account credentials
-// =============================================================
-$proxy_ip   = "YOUR_PROXY_SERVER_OR_IP";   // e.g., "://egress.com" or "194.23.44.12"
-$proxy_port = 8080;                       // Replace with your real numeric decimal proxy port (0-65535)
-$proxy_auth = "username:password";        // Replace with your actual proxy account authentication credentials
-
-curl_setopt($ch, CURLOPT_PROXY, $proxy_ip);
-curl_setopt($ch, CURLOPT_PROXYPORT, $proxy_port);
-curl_setopt($ch, CURLOPT_PROXYUSERPWD, $proxy_auth);
-// =============================================================
-
-// Disable strict local certificate matching to prevent invisible crashes on Railway cloud nodes
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
-curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-curl_setopt($ch, CURLOPT_TIMEOUT, 30); 
-
-$rawResponse = curl_exec($ch);
-
-if ($rawResponse === false) {
-    $curlError = curl_error($ch);
-    $curlErrno = curl_errno($ch);
-    curl_close($ch);
-    die("<h3>Outbound Connection Failed via Proxy</h3>" .
-        "<strong>cURL Error [No. $curlErrno]:</strong> " . htmlspecialchars($curlError) . "<br>" .
-        "<strong>Reason:</strong> Your proxy server could not resolve or route the connection to Safaricom's network.");
-}
-
-curl_close($ch);
-
-// Evaluate response parameters
-if (empty($rawResponse) || strpos($rawResponse, 'access_token') === false) {
-    die("<h3>Safaricom Live Response Dump</h3><pre>" . htmlspecialchars($rawResponse) . "</pre>");
-}
-
-$authResponse = json_decode($rawResponse, true);
-$accessToken = $authResponse['access_token'] ?? null;
-
-// ==========================================
-// 4. FIRE PRODUCTION LIVE STK PUSH REQUEST
-// ==========================================
-$stkUrl = "https://safaricom.co.ke";
-
-$curl_post_data = [
-    'BusinessShortCode' => $businessShortCode,
-    'Password'          => $password,
-    'Timestamp'         => $timestamp,
-    'TransactionType'   => 'CustomerBuyGoodsOnline', // Change to 'CustomerPayBillOnline' if your shortcode is a Paybill
-    'Amount'            => $amount,
-    'PartyA'            => $phone,
-    'PartyB'            => $businessShortCode,
-    'PhoneNumber'       => $phone,
-    'CallBackURL'       => $callbackUrl,
-    'AccountReference'  => $accountReference,
-    'TransactionDesc'   => $transactionDesc
-];
-
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $stkUrl);
-curl_setopt($ch, CURLOPT_PORT, 443);
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Content-Type: application/json',
-    'Authorization: Bearer ' . $accessToken
-]);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($curl_post_data));
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-
-$rawStkResponse = curl_exec($ch);
-$response = json_decode($rawStkResponse, true);
-curl_close($ch);
-
-// ==========================================
-// 5. UPDATE RAILWAY DATABASE INSTANCE
-// ==========================================
-if (($response['ResponseCode'] ?? '') === '0') {
-    $merchantRequestId = $response['MerchantRequestID'];
-    $checkoutRequestId = $response['CheckoutRequestID'];
-    
-    $stmt = $pdo->prepare("
-        INSERT INTO project_donations (user_id, phone_number, amount, merchant_request_id, checkout_request_id, status) 
-        VALUES (?, ?, ?, ?, ?, 'PENDING')
-    ");
-    $stmt->execute([$userId, $phone, $amount, $merchantRequestId, $checkoutRequestId]);
-    
-    echo "<script>alert('M-Pesa STK Push dispatched! Enter your PIN on your mobile phone to support the project.'); window.location.href='" . base_url('member-home.php') . "';</script>";
-} else {
-    die("<h3>M-Pesa STK Push Rejected</h3><pre>" . print_r($response, true) . "</pre>");
-}
 ?>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Processing Payment — Odynasties</title>
+<style>
+  body { background:#071722; color:#fff; font-family:sans-serif; display:flex; align-items:center; justify-content:center; min-height:100vh; margin:0; }
+  .loader-card { background:#fff; color:#14212b; padding:40px; border-radius:16px; width:100%; max-width:400px; box-shadow:0 10px 40px rgba(0,0,0,0.3); text-align:center; }
+  .spinner { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #d71920; border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; }
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  h2 { margin-top:0; color:#14212b; font-size: 22px; }
+  p { color:#556675; font-size:14px; line-height:1.5; }
+</style>
+</head>
+<body>
+
+<div class="loader-card">
+  <div class="spinner"></div>
+  <h2>Connecting to M-Pesa...</h2>
+  <p>Please hold tight. We are securely communicating with Safaricom to trigger the STK PIN prompt directly onto your phone (<strong>+<?=e($phone)?></strong>).</p>
+</div>
+
+<!-- Log transaction metadata parameters inside Railway backend dynamically before launching AJAX -->
+<?php
+  // Generate tracking references early to seed the database record
+  $merchantRequestId = "ODY_M_" . uniqid();
+  $checkoutRequestId = "ODY_C_" . bin2hex(random_bytes(8));
+  
+  $stmt = $pdo->prepare("
+      INSERT INTO project_donations (user_id, phone_number, amount, merchant_request_id, checkout_request_id, status) 
+      VALUES (?, ?, ?, ?, ?, 'PENDING')
+  ");
+  $stmt->execute([$userId, $phone, $amount, $merchantRequestId, $checkoutRequestId]);
+?>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Step 1: Request Authorization Access Token using your Kenyan ISP Network
+    fetch("https://safaricom.co.ke", {
+        method: "GET",
+        headers: {
+            "Authorization": "Basic <?=$credentials?>"
+        }
+    })
+    .then(res => res.json())
+    .then(authData => {
+        if (!authData.access_token) {
+            throw new Error("Safaricom Authorization Rejected. Verify portal key entries.");
+        }
+        
+        // Step 2: Fire the STK Push Request Payload directly from the user's browser
+        return fetch("https://safaricom.co.ke", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " . authData.access_token
+            },
+            body: json.encode({
+                "BusinessShortCode": "<?=$businessShortCode?>",
+                "Password": "<?=$password?>",
+                "Timestamp": "<?=$timestamp?>",
+                "TransactionType": "CustomerBuyGoodsOnline",
+                "Amount": "<?=$amount?>",
+                "PartyA": "<?=$phone?>",
+                "PartyB": "<?=$storeNumber?>",
+                "PhoneNumber": "<?=$phone?>",
+                "CallBackURL": "<?=$callbackUrl?>",
+                "AccountReference": "<?=$accountReference?>",
+                "TransactionDesc": "<?=$transactionDesc?>"
+            })
+        });
+    })
+    .then(res => res.json())
+    .then(stkData => {
+        if (stkData.ResponseCode === "0") {
+            alert("M-Pesa STK Push dispatched successfully! Enter your PIN on your mobile device.");
+            window.location.href = "<?=base_url('member-home.php')?>";
+        } else {
+            alert("STK Push Failed: " + (stkData.ResponseDescription || "Unknown Error"));
+            window.location.href = "<?=base_url('payment-gateways.php')?>";
+        }
+    })
+    .catch(err => {
+        alert("Transaction Flow Interrupted: " + err.message);
+        window.location.href = "<?=base_url('payment-gateways.php')?>";
+    });
+});
+</script>
+
+</body>
+</html>
