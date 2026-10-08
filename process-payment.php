@@ -44,7 +44,7 @@ $transactionDesc  = "Project Funding Support";
 // ==========================================
 // 3. REPAIRED SECURE AUTHENTICATION TOKEN CHANNEL
 // ==========================================
-$authUrl = "https://safaricom.co.ke";
+$authUrl = "api.safaricom.co.ke";
 
 // Concatenate and completely trim keys to eliminate unintended spaces
 $credentials = base64_encode(trim($consumerKey) . ":" . trim($consumerSecret));
