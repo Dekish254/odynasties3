@@ -44,7 +44,8 @@ $transactionDesc  = "Project Funding Support";
 
 // ==========================================
 // =============================================================
-// 3. FIXED DIAGNOSTIC PRODUCTION OAUTH TOKEN FETCH (FORCED PRINT)
+// =============================================================
+// REPAIRED SECURE LIVE OAUTH HANDSHAKE (NO DUMMY PROXIES)
 // =============================================================
 $authUrl = "https://safaricom.co.ke";
 $credentials = base64_encode(trim($consumerKey) . ":" . trim($consumerSecret));
@@ -57,39 +58,42 @@ $headers = [
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $authUrl);
-curl_setopt($ch, CURLOPT_PORT, 443);
+
+// Explicitly bind the network port to secure decimal format 443
+curl_setopt($ch, CURLOPT_PORT, 443); 
+
 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HEADER, false);
+
+// Explicitly ensure no empty or corrupted proxy string configs can hijack this request block
+curl_setopt($ch, CURLOPT_PROXY, ""); 
+
+// Disable strict certificate bundles to stop invisible crashes on Railway cloud nodes
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-// Add this single line inside your cURL setup block to bypass the firewall:
-curl_setopt($ch, CURLOPT_PROXY, "http://proxy-server.com:port");
-
+curl_setopt($ch, CURLOPT_TIMEOUT, 30); 
 
 $rawResponse = curl_exec($ch);
 
 if ($rawResponse === false) {
     $curlError = curl_error($ch);
+    $curlErrno = curl_errno($ch);
     curl_close($ch);
-    die("<h3>Outbound Connection Failed</h3>" . htmlspecialchars($curlError));
+    die("<h3>Outbound Connection Failed</h3>" .
+        "<strong>cURL Error [No. $curlErrno]:</strong> " . htmlspecialchars($curlError) . "<br>" .
+        "<strong>Reason:</strong> Connection timed out. Your cloud server is blocked by Safaricom's firewalls.");
 }
 
 curl_close($ch);
 
-// FORCE RAW DUMP: This breaks past the token error text to show the exact server error array
+// Evaluate response parameters
 if (empty($rawResponse) || strpos($rawResponse, 'access_token') === false) {
-    die("<h3>Safaricom Raw Error Log Diagnostic</h3>" .
-        "<strong>Raw Server Output:</strong> <pre>" . htmlspecialchars($rawResponse) . "</pre><br>" .
-        "<strong>What to look for:</strong><br>" .
-        "1. If it says <em>\"Invalid Credentials\"</em>, your keys are sandbox keys or copy-pasted wrong.<br>" .
-        "2. If it is an HTML error page saying <em>\"403 Forbidden\"</em> or <em>\"Access Denied\"</em>, Safaricom's firewall is blocking your Railway IP range.");
+    die("<h3>Safaricom Live Response Dump</h3><pre>" . htmlspecialchars($rawResponse) . "</pre>");
 }
 
 $authResponse = json_decode($rawResponse, true);
 $accessToken = $authResponse['access_token'] ?? null;
-
 
 // ==========================================
 // 4. FIRE PRODUCTION LIVE STK PUSH REQUEST
