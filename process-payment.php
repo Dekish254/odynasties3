@@ -29,10 +29,10 @@ if ($amount < 10 || strlen($phone) !== 12) {
 // ==========================================
 // 2. LIVE PRODUCTION DARAJA API CONFIGURATIONS
 // ==========================================
-$consumerKey       = "YOUR_LIVE_PRODUCTION_CONSUMER_KEY"; // ──> UPDATE THIS WITH YOUR LIVE KEY
-$consumerSecret    = "YOUR_LIVE_PRODUCTION_CONSUMER_SECRET"; // ──> UPDATE THIS WITH YOUR LIVE SECRET
+$consumerKey       = "3B91FGqA6qxUVKL5vXQ8Sd1oqSA9H1vQFWPPopsYQQhHPZnc"; // ──> UPDATE THIS WITH YOUR LIVE KEY
+$consumerSecret    = "dqANw2odXYFmDhac0wqpee3gBPFQ3w1UpIqEbiSxnzTw1rSQpEJlAecjQDhp1H1P"; // ──> UPDATE THIS WITH YOUR LIVE SECRET
 $businessShortCode = "7122120"; // Your explicit live Business Till/Paybill number
-$passkey           = "YOUR_LIVE_PRODUCTION_PASSKEY"; // ──> UPDATE THIS WITH YOUR LIVE PASSKEY FROM SAFARICOM
+$passkey           = "ed3513511649cc0565e6b9e843ddef6947731076df3cb552a7a4eefc8bc7b4fc"; // ──> UPDATE THIS WITH YOUR LIVE PASSKEY FROM SAFARICOM
 
 // Generate a cryptographically valid M-Pesa programmatic security timestamp string
 $timestamp = date('YmdHis');
