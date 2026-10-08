@@ -90,7 +90,26 @@ elseif ($u['role'] !== $role) {
 .login-error{background:#fff0f1;color:#9e1c25;padding:11px;border-radius:8px;margin-bottom:14px}
 .signup-note{font-size:13px;text-align:center;margin-top:15px}
 .signup-note a{color:#d71920;font-weight:700}
-@media(max-width:850px){.landing .hero-public{grid-template-columns:1fr}.ad-grid{grid-template-columns:1fr}.landing .login-card{max-width:520px}}
+
+/* New Section - Founder, Name & History Styling */
+.about-section {background:#0c2231;padding:80px 0;border-top:1px solid rgba(255,255,255,.05)}
+.about-grid {display:grid;grid-template-columns:1fr 1.25fr;gap:60px;align-items:center}
+.founder-image-wrapper {text-align:center;position:relative}
+.founder-img {width:100%;max-width:320px;height:auto;aspect-ratio:1/1;object-fit:cover;border-radius:50%;border:4px solid #d71920;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.founder-title {margin-top:15px;font-size:16px;color:#dbe4e8}
+.founder-title strong {display:block;font-size:22px;color:#fff;margin-bottom:2px}
+.about-content h3 {font-size:32px;margin:0 0 20px;color:#fff;position:relative}
+.about-content h3::after {content:'';display:block;width:50px;height:3px;background:#d71920;margin-top:10px}
+.about-content p {font-size:16px;line-height:1.8;color:#dbe4e8;margin-bottom:15px}
+
+@media(max-width:850px){
+  .landing .hero-public{grid-template-columns:1fr}
+  .ad-grid{grid-template-columns:1fr}
+  .landing .login-card{max-width:520px;margin:0 auto}
+  /* Responsive styles for the new section */
+  .about-grid {grid-template-columns:1fr;gap:40px;text-align:center}
+  .about-content h3::after {margin:10px auto 0}
+}
 </style>
 </head>
 <body class="landing">
@@ -129,5 +148,37 @@ elseif ($u['role'] !== $role) {
     <div class="signup-note">Administrator accounts are created or promoted by an existing administrator.</div>
   </section>
 </main>
+
+<!-- NEW SECTION: ABOUT, FOUNDER & HISTORY -->
+<section class="about-section">
+  <div class="container about-grid">
+    
+    <div class="founder-image-wrapper">
+      <!-- UPDATE PATH: Replace 'assets/images/founder.jpg' with your real filename -->
+      <img src="<?=base_url('assets/images/founder.jpg')?>" alt="Founder of Odynasties" class="founder-img" onerror="this.src='https://placeholder.com';">
+      <div class="founder-title">
+        <strong>[Founder's Full Name]</strong>
+        Founder, Odynasties
+      </div>
+    </div>
+
+    <div class="about-content">
+      <h3>The Meaning & Origin of Odynasties</h3>
+      <p>
+        The name <strong>Odynasties</strong> represents the lineage, unity, and strength shared by those with the Type O blood group. Often recognized as universal blood donors, Type O individuals possess a unique biological connection that enables them to sustain lives across the globe. Our name celebrates this shared legacy as a global family—a dynasty built on compassion and shared responsibility.
+      </p>
+
+      <h3>Our Journey & History</h3>
+      <p>
+        Founded with a vision to transform a shared biological trait into a support engine, Odynasties began as a small network of dedicated individuals. We recognized that while Type O blood is always in high demand, finding reliable, local donor connections during unexpected emergencies presented constant challenges. 
+      </p>
+      <p>
+        What started as an urgent initiative has evolved into an integrated, interactive system. Today, Odynasties bridges modern web technology with grassroots healthcare outreach, ensuring that our collective strength is accessible to members whenever and wherever they need support.
+      </p>
+    </div>
+
+  </div>
+</section>
+
 </body>
 </html>
