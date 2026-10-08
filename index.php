@@ -154,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
           <div class="connect-container">
             <div class="connect-title">Connect with Us</div>
             <div class="social-links">
-              <!-- WhatsApp Link (Replace with actual phone number format: e.g. 254712345678) -->
+              <!-- WhatsApp Link -->
               <a href="https://wa.me" class="social-btn" target="_blank" title="WhatsApp">WA</a>
               
               <!-- Email Link -->
@@ -197,3 +197,5 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
     <section class="login-card">
       <h2>Sign in to Odynasties</h2>
       <p class="muted">Choose how you are registered before signing in.</p>
+      <?php if($error): ?><div class="login-error"><?=e($error)?></div><?php endif; ?>
+      <form method="post">
