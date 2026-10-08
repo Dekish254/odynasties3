@@ -113,21 +113,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 .login-card .field input[type="email"], .login-card .field input[type="password"] {width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;background:#fff;color:#14212b}
 .role-switch{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0 20px}
 .role-switch label{border:1px solid #ddd;border-radius:10px;padding:12px;text-align:center;cursor:pointer;font-weight:700;font-size:14px;color:#14212b}
-.role-switch input{margin-right:7px}
+.role-switch input {margin-right:7px}
 .login-error{background:#fff0f1;color:#9e1c25;padding:11px;border-radius:8px;margin-bottom:14px}
 .signup-note{font-size:13px;text-align:center;margin-top:15px;color:#14212b}
 .signup-note a{color:#d71920;font-weight:700;text-decoration:none}
-
-@media(max-width:1100px){
-  .about-grid-inner {grid-template-columns:1fr;gap:30px;text-align:center}
-  .about-content h3::after {margin:8px auto 0}
-  .founder-img-large {max-width:240px}
-}
-@media(max-width:950px){
-  .landing .hero-public{grid-template-columns:1fr;gap:45px}
-  .login-card{max-width:100%;position:static}
-  .ad-grid{grid-template-columns:1fr;padding-bottom:45px}
-}
 </style>
 </head>
 <body class="landing">
@@ -189,3 +178,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <h2>Sign in to Odynasties</h2>
       <p class="muted">Choose how you are registered before signing in.</p>
       
+      <?php if(!empty($error)): ?>
+        <div class="login-error"><?=e($error)?></div>
+      <?php endif; ?>
+      
+      <form method="post">
+        <div class="field">
+          <label>Login as</label>
+          <div class="role-switch">
+            <label><input type="radio" name="login_as" value="member" checked> Member</label>
