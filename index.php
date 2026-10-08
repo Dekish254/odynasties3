@@ -1,12 +1,12 @@
 <?php
-$title='Odynasties — Welcome';
+$title = 'Odynasties — Welcome';
 require 'config/config.php';
 
 if (is_admin()) { header('Location: admin/'); exit; }
 if (is_member()) { header('Location: member-home.php'); exit; }
 
 $error = '';
-if ($_SERVER['REQUEST_METHOD']==='POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $role = $_POST['login_as'] ?? '';
   $email = trim($_POST['email'] ?? '');
   $password = $_POST['password'] ?? '';
@@ -24,9 +24,9 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
       $error = $role === 'member'
         ? 'No member account was found with that email. Please sign up as a member.'
         : 'No administrator account was found with that email. Ask an existing administrator to create your administrator account.';
-   } elseif (($u['status'] ?? 'active') !== 'active' || !password_verify($password, $u['password_hash'])) {
+    } elseif (($u['status'] ?? 'active') !== 'active' || !password_verify($password, $u['password_hash'])) {
       $error = 'The email, password or account status is not valid.';
-   } elseif ($u['role'] !== $role) {
+    } elseif ($u['role'] !== $role) {
       $error = $role === 'admin'
         ? 'This account is registered as a member, not an administrator.'
         : 'This account is an administrator. Choose “Administrator” to sign in.';
@@ -44,17 +44,17 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
       $pdo->prepare('INSERT INTO login_sessions(user_id,session_token,role,last_seen) VALUES(?,?,?,NOW())')
           ->execute([$u['id'],$token,$u['role']]);
 
-      if ($u['role']==='admin') {
+      if ($u['role'] === 'admin') {
         start_role_session('admin');
-        $_SESSION['admin_user']=$sessionUser;
-        $_SESSION['admin_session_token']=$token;
+        $_SESSION['admin_user'] = $sessionUser;
+        $_SESSION['admin_session_token'] = $token;
         audit_admin_action('Administrator login', 'Successful administrator login');
         header('Location: admin/'); exit;
       }
 
       start_role_session('member');
-      $_SESSION['member_user']=$sessionUser;
-      $_SESSION['member_session_token']=$token;
+      $_SESSION['member_user'] = $sessionUser;
+      $_SESSION['member_session_token'] = $token;
       header('Location: member-home.php'); exit;
     }
   }
@@ -189,4 +189,3 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
       <h2>Sign in to Odynasties</h2>
       <p class="muted">Choose how you are registered before signing in.</p>
       
-      <?php if($error): ?>
