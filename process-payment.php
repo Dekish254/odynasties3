@@ -33,8 +33,8 @@ if ($amount < 10 || strlen($phone) !== 12) {
 // =============================================================
 // YOUR APPROVED LIVE PRODUCTION BUY GOODS (TILL) CREDENTIALS
 // =============================================================
-$consumerKey       = "bFuQg4fqHajr7VrG1umNX1XR63Y565AJM5Vs0sjGDcXbzphc"; 
-$consumerSecret    = "zL7NqOw5H3di8cEfGkNXoGvr4MAzaFiwnDsFc7SCRsiEGQX2r6QZaWrv4PL2GNiv";
+$consumerKey       = trim("bFuQg4fqHajr7VrG1umNX1XR63Y565AJM5Vs0sjGDcXbzphc"); 
+$consumerSecret    = trim("zL7NqOw5H3di8cEfGkNXoGvr4MAzaFiwnDsFc7SCRsiEGQX2r6QZaWrv4PL2GNiv");
 $storeNumber       = "6280635"; // Your explicit M-Pesa Buy Goods Till Number
 $passkey           = "75fc730afea19a3765dffb3465daa94fa1cb19668476ed2acefad1045a57c3a1"; // Your production passkey
 
