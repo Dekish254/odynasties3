@@ -25,24 +25,21 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
         ? 'No member account was found with that email. Please sign up as a member.'
         : 'No administrator account was found with that email. Ask an existing administrator to create your administrator account.';
    } elseif (($u['status'] ?? 'active') !== 'active' || !password_verify($password, $u['password_hash'])) {
-  $error = 'The email, password or account status is not valid.';
-}
-
-elseif ($u['role'] !== $role) {
+      $error = 'The email, password or account status is not valid.';
+   } elseif ($u['role'] !== $role) {
       $error = $role === 'admin'
         ? 'This account is registered as a member, not an administrator.'
         : 'This account is an administrator. Choose “Administrator” to sign in.';
     } else {
       $sessionUser = [
-  'id' => $u['id'],
-  'name' => $u['name'],
-  'email' => $u['email'],
-  'role' => $u['role'],
-  // --- ADD OR VERIFY THIS EXACT LINE IS PRESENT ---
-  'is_super' => (int)($u['is_super'] ?? 0), 
-  'blood_group' => $u['blood_group'],
-  'profile_picture' => $u['profile_picture'] ?? null
-];
+        'id' => $u['id'],
+        'name' => $u['name'],
+        'email' => $u['email'],
+        'role' => $u['role'],
+        'is_super' => (int)($u['is_super'] ?? 0), 
+        'blood_group' => $u['blood_group'],
+        'profile_picture' => $u['profile_picture'] ?? null
+      ];
       $token = bin2hex(random_bytes(32));
       $pdo->prepare('INSERT INTO login_sessions(user_id,session_token,role,last_seen) VALUES(?,?,?,NOW())')
           ->execute([$u['id'],$token,$u['role']]);
@@ -82,11 +79,18 @@ elseif ($u['role'] !== $role) {
 /* Left Column Styling: Split into Founder Profile on left, Biography on right */
 .about-grid-inner {display:grid;grid-template-columns:1fr 1.5fr;gap:40px;align-items:start;margin-top:20px}
 
-/* Large Founder Profile Styles (Restored from iteration 1) */
+/* Large Founder Profile Styles */
 .founder-image-wrapper {text-align:center}
 .founder-img-large {width:100%;max-width:320px;height:auto;aspect-ratio:1/1;object-fit:cover;border-radius:50%;border:4px solid #d71920;box-shadow:0 10px 30px rgba(0,0,0,.4)}
 .founder-title {margin-top:15px;font-size:16px;color:#dbe4e8}
 .founder-title strong {display:block;font-size:22px;color:#fff;margin-bottom:2px}
+
+/* Connect with Us Styles */
+.connect-container {margin-top:25px;padding-top:15px;border-top:1px solid rgba(255,255,255,.08)}
+.connect-title {font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#a2b4be;margin-bottom:12px}
+.social-links {display:flex;justify-content:center;flex-wrap:wrap;gap:10px}
+.social-btn {display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff;text-decoration:none;font-size:18px;font-weight:bold;transition:all 0.2s ease}
+.social-btn:hover {background:#d71920;border-color:#d71920;transform:translateY(-2px)}
 
 /* Text Content Container */
 .about-content h1{font-size:clamp(32px,4vw,44px);line-height:1.1;margin:0 0 20px}
@@ -105,7 +109,7 @@ elseif ($u['role'] !== $role) {
 .login-card h2{margin-top:0;font-size:24px}
 .role-switch{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0 20px}
 .role-switch label{border:1px solid #ddd;border-radius:10px;padding:12px;text-align:center;cursor:pointer;font-weight:700;font-size:14px}
-.role-switch input{margin-right:7px}
+.role-switch input {margin-right:7px}
 .login-error{background:#fff0f1;color:#9e1c25;padding:11px;border-radius:8px;margin-bottom:14px}
 .signup-note{font-size:13px;text-align:center;margin-top:15px}
 .signup-note a{color:#d71920;font-weight:700}
@@ -136,13 +140,35 @@ elseif ($u['role'] !== $role) {
       <!-- Inner Two-Column Layout for Founder Image (Left) & About Content (Right) -->
       <div class="about-grid-inner">
         
-        <!-- Left Side: Large Portrait & Name Details (Original Size) -->
+        <!-- Left Side: Large Portrait, Name Details & Social Channels -->
         <div class="founder-image-wrapper">
-          <!-- UPDATE PATH: Replace 'assets/images/founder.jpg' with your real image source file -->
+          <!-- UPDATE PATH: Place image in assets/images/founder.jpg -->
           <img src="<?=base_url('assets/images/founder.jpg')?>" alt="Founder of Odynasties" class="founder-img-large" onerror="this.src='https://placeholder.com';">
+          
           <div class="founder-title">
-            <strong>APOSTLE EMMANUEL NZUKI</strong>
+            <strong>[Founder's Full Name]</strong>
             Founder, Odynasties
+          </div>
+
+          <!-- Connect with Us Block -->
+          <div class="connect-container">
+            <div class="connect-title">Connect with Us</div>
+            <div class="social-links">
+              <!-- WhatsApp Link (Replace with actual phone number format: e.g. 254712345678) -->
+              <a href="https://wa.me" class="social-btn" target="_blank" title="WhatsApp">WA</a>
+              
+              <!-- Email Link -->
+              <a href="mailto:your-email@odynasties.com" class="social-btn" title="Email">@</a>
+              
+              <!-- Facebook Link -->
+              <a href="https://facebook.com" class="social-btn" target="_blank" title="Facebook">FB</a>
+              
+              <!-- TikTok Link -->
+              <a href="https://tiktok.com" class="social-btn" target="_blank" title="TikTok">TT</a>
+              
+              <!-- Standard Direct Phone Call Link -->
+              <a href="tel:+YOURPHONENUMBER" class="social-btn" title="Phone">📞</a>
+            </div>
           </div>
         </div>
 
@@ -171,32 +197,3 @@ elseif ($u['role'] !== $role) {
     <section class="login-card">
       <h2>Sign in to Odynasties</h2>
       <p class="muted">Choose how you are registered before signing in.</p>
-      <?php if($error): ?><div class="login-error"><?=e($error)?></div><?php endif; ?>
-      <form method="post">
-        <div class="field">
-          <label>Login as</label>
-          <div class="role-switch">
-            <label><input type="radio" name="login_as" value="member" checked> Member</label>
-            <label><input type="radio" name="login_as" value="admin"> Administrator</label>
-          </div>
-        </div>
-        <div class="field"><label>Email</label><input type="email" name="email" required autocomplete="username"></div>
-        <div class="field"><label>Password</label><input type="password" name="password" required autocomplete="current-password"></div>
-        <button class="btn" style="width:100%">Sign In</button>
-      </form>
-      <div class="signup-note">Not registered as a member? <a href="register.php">Sign up here</a></div>
-      <div class="signup-note">Administrator accounts are created or promoted by an existing administrator.</div>
-    </section>
-
-  </div>
-
-  <!-- Bottom Section: Value Proposition Cards Grid -->
-  <section class="ad-grid">
-    <div class="ad-card"><b>🩸 Donate & Save Lives</b><span>Support blood donation and help connect donors when needed.</span></div>
-    <div class="ad-card"><b>🤝 Community Support</b><span>Share experiences and build a stronger O blood group community.</span></div>
-    <div class="ad-card"><b>🌍 One Global Community</b><span>Connect with people who share the same blood group and values.</span></div>
-  </section>
-</main>
-
-</body>
-</html>
