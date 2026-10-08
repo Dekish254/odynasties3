@@ -63,7 +63,10 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HEADER, false);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-curl_setopt($ch, CURLOPT_TIMEOUT, 30); 
+curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+// Add this single line inside your cURL setup block to bypass the firewall:
+curl_setopt($ch, CURLOPT_PROXY, "http://proxy-server.com:port");
+
 
 $rawResponse = curl_exec($ch);
 
