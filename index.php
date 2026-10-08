@@ -74,9 +74,9 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
 .landing .brandline img{width:52px;height:52px}
 
 /* Main Top Grid Layout */
-.landing .hero-public{display:grid;grid-template-columns:1.25fr .75fr;gap:45px;align-items:start;padding:25px 0 45px}
+.landing .hero-public{display:grid;grid-template-columns:1.25fr .75fr;gap:55px;align-items:start;padding:25px 0 45px}
 
-/* Left Column Layout: Portrait on left, Biography on right */
+/* Left Column Styling */
 .about-grid-inner {display:grid;grid-template-columns:1fr 1.6fr;gap:35px;align-items:start;margin-top:10px}
 
 /* Large Founder Profile Styles */
@@ -105,17 +105,18 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
 .ad-card span{font-size:14px;line-height:1.5;color:#dbe4e8}
 
 /* Login Side-Card Container */
-.login-card{background:#fff;color:#14212b;border-radius:18px;padding:28px;box-shadow:0 18px 50px rgba(0,0,0,.3);position:sticky;top:20px}
-.login-card h2{margin-top:0;font-size:24px}
-.role-switch{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0 20px}
-.role-switch label{border:1px solid #ddd;border-radius:10px;padding:12px;text-align:center;cursor:pointer;font-weight:700;font-size:14px}
-.role-switch input {margin-right:7px}
-.login-error{background:#fff0f1;color:#9e1c25;padding:11px;border-radius:8px;margin-bottom:14px}
-.signup-note{font-size:13px;text-align:center;margin-top:15px}
-.signup-note a{color:#d71920;font-weight:700}
-.field {margin-bottom:15px}
-.field label {display:block;margin-bottom:5px;font-weight:700;font-size:14px}
-.field input[type="email"], .field input[type="password"] {width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box}
+.login-card{background:#fff!important;color:#14212b!important;border-radius:18px!important;padding:28px!important;box-shadow:0 18px 50px rgba(0,0,0,.3)!important;position:sticky!important;top:20px!important;display:block!important}
+.login-card h2{margin-top:0!important;font-size:24px!important;color:#14212b!important;display:block!important}
+.login-card .muted{color:#556675!important;font-size:14px!important;margin-bottom:15px!important}
+.role-switch{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;margin:14px 0 20px!important}
+.role-switch label{border:1px solid #ddd!important;border-radius:10px!important;padding:12px!important;text-align:center!important;cursor:pointer!important;font-weight:700!important;font-size:14px!important;color:#14212b!important;display:block!important}
+.role-switch input {margin-right:7px!important;display:inline-block!important}
+.login-error{background:#fff0f1!important;color:#9e1c25!important;padding:11px!important;border-radius:8px!important;margin-bottom:14px!important}
+.signup-note{font-size:13px!important;text-align:center!important;margin-top:15px!important;color:#14212b!important}
+.signup-note a{color:#d71920!important;font-weight:700!important;text-decoration:none!important}
+.field {margin-bottom:15px!important;display:block!important}
+.field label {display:block!important;margin-bottom:5px!important;font-weight:700!important;font-size:14px!important;color:#14212b!important}
+.field input[type="email"], .field input[type="password"] {width:100%!important;padding:12px!important;border:1px solid #ddd!important;border-radius:8px!important;box-sizing:border-box!important;display:block!important;background:#fff!important;color:#14212b!important}
 
 @media(max-width:1100px){
   .about-grid-inner {grid-template-columns:1fr;gap:30px;text-align:center}
@@ -145,7 +146,6 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
         
         <!-- Left Side: Large Portrait, Name Details & Social Channels -->
         <div class="founder-image-wrapper">
-          <!-- UPDATE PATH: Place image in assets/images/founder.jpg -->
           <img src="<?=base_url('assets/images/founder.jpg')?>" alt="Founder of Odynasties" class="founder-img-large" onerror="this.src='https://placeholder.com';">
           
           <div class="founder-title">
@@ -177,19 +177,3 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
           
           <h3>Our Journey & History</h3>
           <p>
-            Founded with a vision to transform a shared biological trait into a support engine, Odynasties began as a network of dedicated individuals. We recognized that while Type O blood is always in high demand, finding reliable, local donor connections during unexpected emergencies presented constant challenges. 
-          </p>
-          <p>
-            What started as an urgent initiative has evolved into an integrated, interactive system. Today, Odynasties bridges modern web technology with grassroots healthcare outreach, ensuring that our collective strength is accessible to members whenever and wherever they need support.
-          </p>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- Right Column: Login Card Container -->
-    <section class="login-card">
-      <h2>Sign in to Odynasties</h2>
-      <p class="muted">Choose how you are registered before signing in.</p>
-      <?php if($error): ?><div class="login-error"><?=e($error)?></div><?php endif; ?>
-      <form method="post">
