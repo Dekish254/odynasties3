@@ -143,8 +143,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <div class="connect-container">
             <div class="connect-title">Connect with Us</div>
             <div class="social-links">
-              <a href="https://wa.me" class="social-btn" target="_blank">WhatsApp</a>
-              <a href="mailto:your-email@odynasties.com" class="social-btn">Email Address</a>
+              <a href="https://chat.whatsapp.com/GIe1AaexXViBoOvWY1kDea" class="social-btn" target="_blank">WhatsApp</a>
+              <a href="mailto:admin@odynasties.com" class="social-btn">Email Address</a>
               <a href="https://facebook.com" class="social-btn" target="_blank">Facebook Page</a>
               <a href="https://tiktok.com" class="social-btn" target="_blank">TikTok Channel</a>
               <a href="Tel:+254758676624" class="social-btn">Call Us Directly</a>
