@@ -26,11 +26,13 @@ if ($amount < 10 || strlen($phone) !== 12) {
     die("Error: Please provide a valid transaction amount (Min KES 10) and correct phone format (2547XXXXXXXX).");
 }
 
-// 2. Safaricom M-Pesa Sandbox Configurations (Swap these strings out when going to live production)
-$consumerKey       = "3B91FGqA6qxUVKL5vXQ8Sd1oqSA9H1vQFWPPopsYQQhHPZnc"; 
-$consumerSecret    = "dqANw2odXYFmDhac0wqpee3gBPFQ3w1UpIqEbiSxnzTw1rSQpEJlAecjQDhp1H1P";
-$businessShortCode = "7122120"; // Safaricom Sandbox testing Till/Paybill number
-$passkey           = "ed3513511649cc0565e6b9e843ddef6947731076df3cb552a7a4eefc8bc7b4fc"; // Sandbox Passkey
+// ==========================================
+// 2. LIVE PRODUCTION DARAJA API CONFIGURATIONS
+// ==========================================
+$consumerKey       = "YOUR_LIVE_PRODUCTION_CONSUMER_KEY"; // ──> UPDATE THIS WITH YOUR LIVE KEY
+$consumerSecret    = "YOUR_LIVE_PRODUCTION_CONSUMER_SECRET"; // ──> UPDATE THIS WITH YOUR LIVE SECRET
+$businessShortCode = "7122120"; // Your explicit live Business Till/Paybill number
+$passkey           = "YOUR_LIVE_PRODUCTION_PASSKEY"; // ──> UPDATE THIS WITH YOUR LIVE PASSKEY FROM SAFARICOM
 
 // Generate a cryptographically valid M-Pesa programmatic security timestamp string
 $timestamp = date('YmdHis');
@@ -42,9 +44,9 @@ $accountReference = "Odynasties";
 $transactionDesc  = "Project Funding Support";
 
 // ==========================================
-// 3. REPAIRED SECURE AUTHENTICATION TOKEN CHANNEL
+// 3. SECURE LIVE AUTHENTICATION TOKEN CHANNEL (PORT 443 REQUIRED)
 // ==========================================
-$authUrl = "api.safaricom.co.ke";
+$authUrl = "https://safaricom.co.ke";
 
 // Concatenate and completely trim keys to eliminate unintended spaces
 $credentials = base64_encode(trim($consumerKey) . ":" . trim($consumerSecret));
@@ -57,11 +59,12 @@ $headers = [
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $authUrl);
+curl_setopt($ch, CURLOPT_PORT, 443); // FORCES SECURE OUTBOUND PROCESSING PORT 443
 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HEADER, false);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Bypasses local SSL check boundaries
-curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true); // Enforced to true for absolute security in production
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 
 $rawResponse = curl_exec($ch);
 
@@ -78,26 +81,21 @@ $accessToken = $authResponse['access_token'] ?? null;
 
 // Detailed Diagnostics to point you directly to the exact platform mismatch
 if (!$accessToken) {
-    $errorMessage = $authResponse['errorMessage'] ?? 'Invalid Credentials or Revoked App State';
+    $errorMessage = $authResponse['errorMessage'] ?? 'Invalid Live Credentials or Revoked App State';
     die("<h3>M-Pesa API Handshake Failed</h3>" .
-        "<strong>Safaricom Gateway Response:</strong> " . htmlspecialchars($errorMessage) . "<br>" .
-        "<strong>Suggestions:</strong> Make sure you are using <u>Sandbox Keys</u> for the sandbox URL. " .
-        "If you are launching live, your URL must be changed to <em>api.safaricom.co.ke</em>.");
+        "<strong>Safaricom Gateway Response:</strong> " . htmlspecialchars($errorMessage));
 }
 
-
-if (!$accessToken) {
-    die("Error: Failed to fetch secure authentication token from M-Pesa API endpoint. Double-check Consumer Keys.");
-}
-
-// 4. Populate Payloads & Fire STK Push Command to Safaricom
+// ==========================================
+// 4. POPULATE PAYLOADS & FIRE LIVE STK PUSH GATE ROUTE
+// ==========================================
 $stkUrl = "https://safaricom.co.ke";
 
 $curl_post_data = [
     'BusinessShortCode' => $businessShortCode,
     'Password'          => $password,
     'Timestamp'         => $timestamp,
-    'TransactionType'   => 'CustomerPayBillOnline',
+    'TransactionType'   => 'CustomerBuyGoodsOnline', // Change to 'CustomerPayBillOnline' if this is a Paybill rather than a Till
     'Amount'            => $amount,
     'PartyA'            => $phone,
     'PartyB'            => $businessShortCode,
@@ -107,7 +105,9 @@ $curl_post_data = [
     'TransactionDesc'   => $transactionDesc
 ];
 
-$ch = curl_init($stkUrl);
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $stkUrl);
+curl_setopt($ch, CURLOPT_PORT, 443); // FORCES SECURE OUTBOUND PROCESSING PORT 443
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
     'Authorization: Bearer ' . $accessToken
@@ -115,7 +115,9 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($curl_post_data));
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+
 $response = json_decode(curl_exec($ch), true);
 curl_close($ch);
 
@@ -134,7 +136,7 @@ if (($response['ResponseCode'] ?? '') === '0') {
     // Output a direct frontend verification response alert
     echo "<script>alert('M-Pesa STK Push dispatched! Enter your PIN on your mobile device to complete payment.'); window.location.href='" . base_url('member-home.php') . "';</script>";
 } else {
-    $desc = $response['ResponseDescription'] ?? 'Unknown Gateway Failure Error';
+    $desc = $response['ResponseDescription'] ?? 'Unknown Live Gateway Failure Error';
     echo "<script>alert('STK Push Error: " . addslashes($desc) . "'); window.location.href='" . base_url('payment-gateways.php') . "';</script>";
 }
 ?>
