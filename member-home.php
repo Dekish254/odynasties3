@@ -65,8 +65,12 @@ require 'includes/header.php';
   </section>
 
   <div class="member-grid">
+    <!-- Decoupled: Points strictly to blood tracking page -->
     <article class="member-ad"><div class="icon">🩸</div><h2>Donate Blood & Save Lives</h2><p>Be ready to donate when someone needs help. Learn about blood donation, register as a donor and help strengthen the community.</p><a class="btn" href="donate.php">Blood Donation</a></article>
-    <article class="member-ad"><div class="icon">❤️</div><h2>Support Odynasties</h2><p>Every contribution counts. Support the project with whatever you can afford and help the community grow, serve and reach more people.</p><a class="btn" href="donate.php">Support the Project</a></article>
+    
+    <!-- Isolated Payment Route: Now points to our dedicated multi-option gateway file -->
+    <article class="member-ad"><div class="icon">❤️</div><h2>Support Odynasties</h2><p>Every contribution counts. Support the project with financial aid to help our platform grow, secure servers, and reach more global members.</p><a class="btn" href="payment-gateways.php" style="background:#26a269; border-color:#26a269;">Support the Project</a></article>
+    
     <article class="member-ad"><div class="icon">🤝</div><h2>Community Support</h2><p>Need assistance or know someone who does? Make a support request, see community requests and stand with other members.</p><a class="btn" href="support.php">Support Requests</a></article>
     <article class="member-ad"><div class="icon">📅</div><h2>Join Community Events</h2><p>Keep up with meetups, blood drives, campaigns and other Odynasties activities.</p><a class="btn" href="events.php">View Events</a></article>
     <article class="member-ad"><div class="icon">📰</div><h2>Latest Odynasties News</h2><p>Read community updates, announcements, achievements and stories from the Odynasties family.</p><a class="btn" href="news.php">Read News</a></article>
