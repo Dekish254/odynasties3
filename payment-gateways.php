@@ -34,8 +34,11 @@ require 'includes/header.php';
 .amount-input-group input:focus {border-color: #26a269;}
 .pay-submit-btn {width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: 700; font-size: 14px; cursor: pointer; text-align: center; text-decoration: none; transition: background 0.2s ease;}
 
-.btn-mpesa {background: #26a269; color: #fff;} .btn-mpesa:hover {background: #1e8251;}
+.btn-mpesa {background: #e2e8f0; color: #718096; cursor: not-allowed;} /* Styled to look grayed out */
 .btn-intl {background: #dd6b20; color: #fff;} .btn-intl:hover {background: #b85619;}
+
+/* Maintenance Alert Box Styling */
+.maintenance-banner {background: #fffaf0; border: 1px solid #feebc8; border-radius: 8px; padding: 12px; margin-bottom: 15px; font-size: 13px; color: #c05621; display: flex; gap: 8px; align-items: flex-start;}
 
 @media(max-width: 768px) {
   .gateway-grid {grid-template-columns: 1fr;}
@@ -50,23 +53,44 @@ require 'includes/header.php';
 
   <div class="gateway-grid">
     
-    <!-- Option 1: Mobile Money Gateway (M-Pesa Integration) -->
-    <div class="gateway-card">
-      <span class="gateway-badge badge-mpesa">Mobile Money</span>
+    <!-- Option 1: Mobile Money Gateway (M-Pesa Integration) - UNDER MAINTENANCE -->
+    <div class="gateway-card" style="opacity: 0.85;">
+      <span class="gateway-badge badge-mpesa" style="background:#edf2f7; color:#4a5568;">Temporarily Offline</span>
       <h2>M-Pesa STK Push</h2>
       <p>Instant transactional processing using your mobile phone. Triggers an automated secure STK PIN request prompt window directly on your handset screen.</p>
       
-      <form action="process-payment.php" method="post">
-        <input type="hidden" name="gateway" value="mpesa">
-        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-        
+      <!-- Maintenance Alert Info -->
+      <div class="maintenance-banner">
+        <span>⚠️</span>
+        <span><strong>Gateway Maintenance:</strong> We are running a scheduled secure profiling update with Safaricom networks. Please utilize the Crypto checkout below in the interim.</span>
+      </div>
+
+      <form onsubmit="return false;">
         <div class="amount-input-group">
-          <input type="number" name="amount" placeholder="Amount (KES)" required min="10">
-          <input type="tel" name="phone" placeholder="e.g. 0712345678" required pattern="^(?:\+254|254|0)?(7|1)[0-9]{8}$" title="Please enter a valid Kenyan phone number (e.g. 0712345678 or 254712345678)">
+          <input type="number" placeholder="Amount (KES)" disabled>
+          <input type="tel" placeholder="07XXXXXXXX" disabled>
         </div>
-        <button type="submit" class="pay-submit-btn btn-mpesa">Pay via M-Pesa</button>
+        <button type="button" class="pay-submit-btn btn-mpesa" disabled>M-Pesa Gateway Offline</button>
       </form>
     </div>
+
+    <!-- Option 2: Alternative Crypto Gateway - FULLY ACTIVE -->
+    <div class="gateway-card" style="border-color: #dd6b20; box-shadow: 0 8px 24px rgba(221,107,32,.06);">
+      <span class="gateway-badge badge-intl">Alternative Currency</span>
+      <h2>Crypto Network</h2>
+      <p>Decentralized project tracking via digital asset ledgers. Generates standard public destination keys for safe routing across Bitcoin, Ethereum, and USDT channels.</p>
+      
+      <div class="amount-input-group">
+        <input type="text" value="USDT (TRC20): TR7NHqjeKQxGTCi8q8DE4G6Z..." readonly style="background: #f7fafb; cursor: text; font-size:12px;">
+      </div>
+      <a href="contact.php?intent=crypto_invoice" class="pay-submit-btn btn-intl" style="text-decoration:none; display:block;">Request Invoice Wallet</a>
+    </div>
+
+  </div>
+</div>
+
+<?php require 'includes/footer.php'; ?>
+
 
     <!-- Option 2: Alternative Crypto Gateway -->
     <div class="gateway-card">
