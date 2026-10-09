@@ -1,5 +1,12 @@
 <?php
-require 'config/config.php'; require_member();
+require 'config/config.php'; 
+require_member();
+
+// Fix part 1: Automatically initialize a secure token signature inside the member's browser session
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 $title = 'Odynasties — Support the Project';
 require 'includes/header.php';
 ?>
@@ -45,7 +52,7 @@ require 'includes/header.php';
 
   <div class="gateway-grid">
     
-    <!-- Option 1: Mobile Money Gateway (e.g. M-Pesa Integration) -->
+    <!-- Option 1: Mobile Money Gateway (M-Pesa Integration) -->
     <div class="gateway-card">
       <span class="gateway-badge badge-mpesa">Mobile Money</span>
       <h2>M-Pesa STK Push</h2>
@@ -53,15 +60,18 @@ require 'includes/header.php';
       
       <form action="process-payment.php" method="post">
         <input type="hidden" name="gateway" value="mpesa">
+        <!-- Fix part 2: Pass Token parameter inside the form payload -->
+        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+        
         <div class="amount-input-group">
           <input type="number" name="amount" placeholder="Amount (KES)" required min="10">
           <input type="tel" name="phone" placeholder="2547XXXXXXXX" required pattern="^[0-9]{12}$">
         </div>
-        <button class="pay-submit-btn btn-mpesa">Pay via M-Pesa</button>
+        <button type="submit" class="pay-submit-btn btn-mpesa">Pay via M-Pesa</button>
       </form>
     </div>
 
-    <!-- Option 2: International Card Processor (e.g. Stripe / Flutterwave API) -->
+    <!-- Option 2: International Card Processor (Flutterwave API) -->
     <div class="gateway-card">
       <span class="gateway-badge badge-card">Credit & Debit Cards</span>
       <h2>Stripe / Flutterwave</h2>
@@ -69,10 +79,13 @@ require 'includes/header.php';
       
       <form action="process-payment.php" method="post">
         <input type="hidden" name="gateway" value="card">
+        <!-- Fix part 2: Pass Token parameter inside the form payload -->
+        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+        
         <div class="amount-input-group">
           <input type="number" name="amount" placeholder="Amount (USD)" required min="5">
         </div>
-        <button class="pay-submit-btn btn-card">Card Checkout</button>
+        <button type="submit" class="pay-submit-btn btn-card">Card Checkout</button>
       </form>
     </div>
 
@@ -84,10 +97,13 @@ require 'includes/header.php';
       
       <form action="process-payment.php" method="post">
         <input type="hidden" name="gateway" value="paypal">
+        <!-- Fix part 2: Pass Token parameter inside the form payload -->
+        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+        
         <div class="amount-input-group">
           <input type="number" name="amount" placeholder="Amount (USD)" required min="5">
         </div>
-        <button class="pay-submit-btn btn-intl">Proceed to PayPal</button>
+        <button type="submit" class="pay-submit-btn btn-intl">Proceed to PayPal</button>
       </form>
     </div>
 
@@ -97,13 +113,10 @@ require 'includes/header.php';
       <h2>Crypto Network</h2>
       <p>Decentralized project tracking via digital asset ledgers. Generates standard public destination keys for safe routing across Bitcoin, Ethereum, and USDT channels.</p>
       
-      <form action="process-payment.php" method="post">
-        <input type="hidden" name="gateway" value="crypto">
-        <div class="amount-input-group">
-          <input type="text" value="USDT (TRC20): TR7NHqjeKQxGTCi8q8DE4G6Z..." readonly style="background: #f7fafb; cursor: text; font-size:12px;">
-        </div>
-        <a href="contact.php" class="pay-submit-btn btn-intl" style="background:#4a5568; color:#fff; text-align:center;">Request Invoice Wallet</a>
-      </form>
+      <div class="amount-input-group">
+        <input type="text" value="USDT (TRC20): TR7NHqjeKQxGTCi8q8DE4G6Z..." readonly style="background: #f7fafb; cursor: text; font-size:12px;">
+      </div>
+      <a href="contact.php?intent=crypto_invoice" class="pay-submit-btn btn-intl" style="background:#4a5568; color:#fff; text-align:center; text-decoration:none; display:block;">Request Invoice Wallet</a>
     </div>
 
   </div>
