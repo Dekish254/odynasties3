@@ -2,7 +2,7 @@
 require 'config/config.php'; 
 require_member();
 
-// Fix part 1: Automatically initialize a secure token signature inside the member's browser session
+// Automatically initialize a secure token signature inside the member's browser session
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
@@ -23,7 +23,6 @@ require 'includes/header.php';
 
 .gateway-badge {display: inline-block; padding: 4px 10px; font-size: 11px; font-weight: 700; text-transform: uppercase; border-radius: 4px; margin-bottom: 15px; align-self: flex-start;}
 .badge-mpesa {background: #eef7f1; color: #26a269;}
-.badge-card {background: #f0f4f8; color: #2b6cb0;}
 .badge-intl {background: #fff6ee; color: #dd6b20;}
 
 .gateway-card h2 {margin: 0 0 10px 0; font-size: 22px; color: #182932;}
@@ -36,7 +35,6 @@ require 'includes/header.php';
 .pay-submit-btn {width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: 700; font-size: 14px; cursor: pointer; text-align: center; text-decoration: none; transition: background 0.2s ease;}
 
 .btn-mpesa {background: #26a269; color: #fff;} .btn-mpesa:hover {background: #1e8251;}
-.btn-card {background: #2b6cb0; color: #fff;} .btn-card:hover {background: #22519a;}
 .btn-intl {background: #dd6b20; color: #fff;} .btn-intl:hover {background: #b85619;}
 
 @media(max-width: 768px) {
@@ -60,54 +58,17 @@ require 'includes/header.php';
       
       <form action="process-payment.php" method="post">
         <input type="hidden" name="gateway" value="mpesa">
-        <!-- Fix part 2: Pass Token parameter inside the form payload -->
         <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
         
         <div class="amount-input-group">
           <input type="number" name="amount" placeholder="Amount (KES)" required min="10">
-          <input type="tel" name="phone" placeholder="2547XXXXXXXX" required pattern="^[0-9]{12}$">
+          <input type="tel" name="phone" placeholder="e.g. 0712345678" required pattern="^(?:\+254|254|0)?(7|1)[0-9]{8}$" title="Please enter a valid Kenyan phone number (e.g. 0712345678 or 254712345678)">
         </div>
         <button type="submit" class="pay-submit-btn btn-mpesa">Pay via M-Pesa</button>
       </form>
     </div>
 
-    <!-- Option 2: International Card Processor (Flutterwave API) -->
-    <div class="gateway-card">
-      <span class="gateway-badge badge-card">Credit & Debit Cards</span>
-      <h2>Stripe / Flutterwave</h2>
-      <p>Secure global card processing handling Visa, Mastercard, American Express, and Apple Pay checkouts. Perfect for instant international support transfers.</p>
-      
-      <form action="process-payment.php" method="post">
-        <input type="hidden" name="gateway" value="card">
-        <!-- Fix part 2: Pass Token parameter inside the form payload -->
-        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-        
-        <div class="amount-input-group">
-          <input type="number" name="amount" placeholder="Amount (USD)" required min="5">
-        </div>
-        <button type="submit" class="pay-submit-btn btn-card">Card Checkout</button>
-      </form>
-    </div>
-
-    <!-- Option 3: PayPal Express Channel -->
-    <div class="gateway-card">
-      <span class="gateway-badge badge-intl">Digital Wallet</span>
-      <h2>PayPal Checkout</h2>
-      <p>Secure balance transfers via PayPal. Redirects out safely to log directly into your global wallet instance to finalize payment validation parameters.</p>
-      
-      <form action="process-payment.php" method="post">
-        <input type="hidden" name="gateway" value="paypal">
-        <!-- Fix part 2: Pass Token parameter inside the form payload -->
-        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-        
-        <div class="amount-input-group">
-          <input type="number" name="amount" placeholder="Amount (USD)" required min="5">
-        </div>
-        <button type="submit" class="pay-submit-btn btn-intl">Proceed to PayPal</button>
-      </form>
-    </div>
-
-    <!-- Option 4: Alternative Crypto Gateway -->
+    <!-- Option 2: Alternative Crypto Gateway -->
     <div class="gateway-card">
       <span class="gateway-badge badge-intl">Alternative Currency</span>
       <h2>Crypto Network</h2>
