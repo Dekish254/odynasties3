@@ -1,0 +1,7 @@
+{
+    "require": {
+        "php": ">=7.4",
+        "flutterwave/flutterwave-v3": "^1.0",
+        "paypal/paypal-checkout-sdk": "^1.0"
+    }
+}
