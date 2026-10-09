@@ -7,41 +7,29 @@ $consumerSecret = "zL7NqOw5H3di8ceFGkNXoGvr4MAzaFiwnDsFc7SCRsiEGQX2r6QZaWrv4PL2G
 $businessShortCode = "6280635";
 $passkey        = "75fc730afea19a3765dffb3465daa94fa1cb19668476ed2acefad1045a57c3a1";
 
-// 2. GENERATE ACCESS TOKEN WITH SSL & USER-AGENT FIXES
+// 2. GENERATE ACCESS TOKEN WITH STRICT CONNECTION BYPASSES
 $tokenUrl = "https://safaricom.co.ke";
 
 $curl = curl_init($tokenUrl);
 curl_setopt($curl, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
-    'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)' // Simulates a clean browser header to bypass firewall blocks
+    'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Accept: */*',
+    'Connection: keep-alive'
 ]);
 curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($curl, CURLOPT_HEADER, false);
 curl_setopt($curl, CURLOPT_USERPWD, $consumerKey . ":" . $consumerSecret);
 
-// Crucial for some Linux servers lacking updated local root SSL certificates
+// Connection Handshake Fixes
 curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); 
 curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+curl_setopt($curl, CURLOPT_FRESH_CONNECT, true);     // Don't reuse cached dead sockets
+curl_setopt($curl, CURLOPT_TIMEOUT, 15);             // Don't hang indefinitely
+curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4); // Force IPv4 routing
 
 $tokenResponse = curl_exec($curl);
 
-// Check if cURL itself failed to connect
-if (curl_errno($curl)) {
-    die("cURL Network Error: " . curl_error($curl));
-}
-
-curl_close($curl);
-
-$tokenResult = json_decode($tokenResponse);
-
-// If the json object is null, print out the raw string returned by Safaricom to identify the precise system block
-if ($tokenResult === null || !isset($tokenResult->access_token)) {
-    echo "<h3>Raw Server Response from Safaricom:</h3>";
-    echo "<pre>" . htmlspecialchars($tokenResponse) . "</pre>";
-    die("Token Generation Failed. Read the raw response above to see the issue.");
-}
-
-$accessToken = $tokenResult->access_token;
 
 // 3. GENERATE PASSWORD & TIMESTAMP
 $timestamp = date('YmdHis');
