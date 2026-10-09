@@ -155,4 +155,10 @@ function flash($type,$msg){$_SESSION['flash']=[$type,$msg];}
 function show_flash(){if(!empty($_SESSION['flash'])){[$t,$m]=$_SESSION['flash'];unset($_SESSION['flash']);echo '<div class="flash '.e($t).'">'.e($m).'</div>';}}
 function profile_image_url($filename){return $filename ? base_url('uploads/profiles/'.rawurlencode(basename($filename))) : base_url('assets/images/profile-placeholder.svg');}
 current_session_valid(session_name()==='ODY_ADMIN_SESSION'?'admin':'member');
+// =================================================================
+// FLUTTERWAVE SANDBOX TESTING API KEYS
+// =================================================================
+define('FLW_PUBLIC_KEY', 'FLWPUBK_TEST-c30983e2da025cb73922c293739fa421-X');
+define('FLW_SECRET_KEY', 'FLWSECK_TEST-3841a0be3b3c3789b70b5569550e501b-X');
+
 ?>
