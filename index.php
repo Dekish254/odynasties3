@@ -154,17 +154,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- Right Side: The Narrative History Text -->
         <div class="about-content">
-          <h1>One Blood Group.<br>One Community.<br>One Dynasty.</h1>
-          
-          <h3>The Meaning & Origin</h3>
-          <p>
-            The name <strong>Odynasties</strong> represents the lineage, unity, and strength shared by those with the Type O blood group. Often recognized as universal blood donors, Type O individuals possess a unique biological connection that enables them to sustain lives across the globe. Our name celebrates this shared legacy as a global family—a dynasty built on compassion and shared responsibility.
-          </p>
+         
           
           <h3>About the Founder</h3>
           <p>
          Prophet Emmanuel Nzuki, the Founder of O Dynasty Foundation, founded the initiative from a deep desire to create a positive community where people of Blood Group O can understand their unique challenges, support one another, and grow in life, relationships, and purpose. What began as an idea to bring people together has grown into a vision of unity, empowerment, positive living, and building better lives together.
 O Dynasty Foundation — United by Blood, Empowered by Purpose.</p>
+         <h1>One Blood Group.<br>One Community.<br>One Dynasty.</h1>
+          
+          <h3>The Meaning & Origin</h3>
+          <p>
+            The name <strong>Odynasties</strong> represents the lineage, unity, and strength shared by those with the Type O blood group. Often recognized as universal blood donors, Type O individuals possess a unique biological connection that enables them to sustain lives across the globe. Our name celebrates this shared legacy as a global family—a dynasty built on compassion and shared responsibility.
+          </p>
         </div>
 
       </div>
