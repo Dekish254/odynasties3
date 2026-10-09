@@ -7,7 +7,8 @@ $consumerSecret = "zL7NqOw5H3di8ceFGkNXoGvr4MAzaFiwnDsFc7SCRsiEGQX2r6QZaWrv4PL2G
 $businessShortCode = "6280635";
 $passkey        = "75fc730afea19a3765dffb3465daa94fa1cb19668476ed2acefad1045a57c3a1";
 
-// 2. DIAGNOSTIC GENERATION BLOCK
+// 2. DIAGNOSTIC GENERATION BLOCK WITH REDIRECT FIXES
+// Notice the trailing slash before the query parameters, required by some gateway setups
 $tokenUrl = "https://safaricom.co.ke";
 
 $curl = curl_init($tokenUrl);
@@ -17,12 +18,17 @@ curl_setopt($curl, CURLOPT_HTTPHEADER, [
 ]);
 curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($curl, CURLOPT_USERPWD, $consumerKey . ":" . $consumerSecret);
+
+// THE CRITICAL FIXES FOR 301 MOVED PERMANENTLY:
+curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true); // Forces cURL to automatically follow Safaricom's 301 path
+curl_setopt($curl, CURLOPT_MAXREDIRS, 3);        // Stop infinite loops if something goes wrong
+
 curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); 
 curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
 curl_setopt($curl, CURLOPT_TIMEOUT, 10);
 
 $tokenResponse = curl_exec($curl);
-$httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE); // Find out what the server actually did
+$httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE); 
 
 if (curl_errno($curl)) {
     $error_msg = curl_error($curl);
@@ -32,7 +38,7 @@ if (curl_errno($curl)) {
 curl_close($curl);
 
 echo "<h3>Server Diagnosis:</h3>";
-echo "HTTP Status Code Received: <b>" . $httpCode . "</b><br>";
+echo "HTTP Status Code Received (After Follow): <b>" . $httpCode . "</b><br>";
 
 $tokenResult = json_decode($tokenResponse);
 if ($httpCode !== 200 || !isset($tokenResult->access_token)) {
@@ -41,6 +47,7 @@ if ($httpCode !== 200 || !isset($tokenResult->access_token)) {
 }
 
 $accessToken = $tokenResult->access_token;
+
 // 3. GENERATE PASSWORD & TIMESTAMP
 $timestamp = date('YmdHis');
 $password  = base64_encode($businessShortCode . $passkey . $timestamp);
