@@ -2,13 +2,12 @@
 date_default_timezone_set('Africa/Nairobi');
 
 // 1. PRODUCTION CREDENTIALS
-$consumerKey    = "bFuQg4fqHajr7VrG1umNX1XR63Y565AJM5Vs0sjGDcXbzphc";
-$consumerSecret = "zL7NqOw5H3di8ceFGkNXoGvr4MAzaFiwnDsFc7SCRsiEGQX2r6QZaWrv4PL2GNiv";
+$consumerKey       = "bFuQg4fqHajr7VrG1umNX1XR63Y565AJM5Vs0sjGDcXbzphc";
+$consumerSecret    = "zL7NqOw5H3di8ceFGkNXoGvr4MAzaFiwnDsFc7SCRsiEGQX2r6QZaWrv4PL2GNiv";
 $businessShortCode = "6280635";
-$passkey        = "75fc730afea19a3765dffb3465daa94fa1cb19668476ed2acefad1045a57c3a1";
+$passkey           = "75fc730afea19a3765dffb3465daa94fa1cb19668476ed2acefad1045a57c3a1";
 
-// 2. DIAGNOSTIC GENERATION BLOCK WITH REDIRECT FIXES
-// Notice the trailing slash before the query parameters, required by some gateway setups
+// 2. CORRECT PRODUCTION TOKEN ENDPOINT
 $tokenUrl = "https://safaricom.co.ke";
 
 $curl = curl_init($tokenUrl);
@@ -18,14 +17,11 @@ curl_setopt($curl, CURLOPT_HTTPHEADER, [
 ]);
 curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($curl, CURLOPT_USERPWD, $consumerKey . ":" . $consumerSecret);
-
-// THE CRITICAL FIXES FOR 301 MOVED PERMANENTLY:
-curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true); // Forces cURL to automatically follow Safaricom's 301 path
-curl_setopt($curl, CURLOPT_MAXREDIRS, 3);        // Stop infinite loops if something goes wrong
-
+curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+curl_setopt($curl, CURLOPT_MAXREDIRS, 3);
 curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); 
 curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+curl_setopt($curl, CURLOPT_TIMEOUT, 15);
 
 $tokenResponse = curl_exec($curl);
 $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE); 
@@ -38,7 +34,7 @@ if (curl_errno($curl)) {
 curl_close($curl);
 
 echo "<h3>Server Diagnosis:</h3>";
-echo "HTTP Status Code Received (After Follow): <b>" . $httpCode . "</b><br>";
+echo "HTTP Status Code Received: <b>" . $httpCode . "</b><br>";
 
 $tokenResult = json_decode($tokenResponse);
 if ($httpCode !== 200 || !isset($tokenResult->access_token)) {
@@ -52,9 +48,9 @@ $accessToken = $tokenResult->access_token;
 $timestamp = date('YmdHis');
 $password  = base64_encode($businessShortCode . $passkey . $timestamp);
 
-// 4. PREPARE THE STK QUERY PAYLOAD
+// 4. CORRECT PRODUCTION STK QUERY ENDPOINT
 $queryUrl = "https://safaricom.co.ke";
-$checkoutRequestID = "ws_CO_08102026150740123456"; // Use your actual checkout request ID
+$checkoutRequestID = "ws_CO_08102026150740123456"; // Swap dynamically with your actual checkout request ID
 
 $payload = array(
     "BusinessShortCode" => $businessShortCode,
@@ -80,5 +76,6 @@ $queryResponse = curl_exec($curlQuery);
 curl_close($curlQuery);
 
 // 6. OUTPUT THE FINAL M-PESA RESPONSE
-echo $queryResponse;
+echo "<h3>M-Pesa STK Query Response:</h3>";
+echo "<pre>" . htmlspecialchars($queryResponse) . "</pre>";
 ?>
