@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('Africa/Nairobi');
 require 'config/config.php'; // Contains user data hooks, database connections, and API constants
 require_member();            // Access guard ensuring only authenticated members can trigger transactions
 
@@ -16,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $gateway   = isset($_POST['gateway']) ? trim($_POST['gateway']) : '';
 $amount    = isset($_POST['amount']) ? floatval($_POST['amount']) : 0;
 
-// Fetch member tracking metrics from session variables
+// Fetch member tracking metrics from session variables safely
 $userEmail = $_SESSION['user_email'] ?? 'member@odynasties.org'; 
 $userName  = $_SESSION['user_name'] ?? 'Odynasties Member';
 
@@ -29,7 +30,6 @@ switch ($gateway) {
     // CHANNEL 1: SAFARICOM M-PESA GATEWAY (UNCHANGED INTEGRATION)
     // =================================================================
     case 'mpesa':
-        // Safaricom parameters and configurations remain exactly as you structured them
         $consumerKey       = "bFuQg4fqHajr7VrG1umNX1XR63Y565AJM5Vs0sjGDcXbzphc";
         $consumerSecret    = "zL7NqOw5H3di8ceFGkNXoGvr4MAzaFiwnDsFc7SCRsiEGQX2r6QZaWrv4PL2GNiv";
         $businessShortCode = "6280635";
@@ -205,3 +205,4 @@ switch ($gateway) {
     default:
         die("Fatal execution error. Untracked payment option processed.");
 }
+?>
