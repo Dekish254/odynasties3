@@ -3,6 +3,7 @@ date_default_timezone_set('Africa/Nairobi');
 require 'config/config.php'; 
 require_member();            
 
+// Security Guard Checkpoint
 if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
     die("Security verification failed. Invalid request token.");
 }
@@ -15,12 +16,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $gateway = isset($_POST['gateway']) ? trim($_POST['gateway']) : '';
 $amount  = isset($_POST['amount']) ? floatval($_POST['amount']) : 0;
 
-$userEmail = $_SESSION['user_email'] ?? 'member@odynasties.org'; 
-$userName  = $_SESSION['user_name'] ?? 'Odynasties Member';
-$txRef     = 'ODY-' . time() . '-' . rand(1000, 9999);
-
 // =================================================================
-// CHANNEL 1: SAFARICOM M-PESA GATEWAY (UNCHANGED INTEGRATION)
+// MAIN HANDLER 1: SAFARICOM M-PESA GATEWAY (UNCHANGED INTEGRATION)
 // =================================================================
 if ($gateway === 'mpesa') {
     $consumerKey       = "bFuQg4fqHajr7VrG1umNX1XR63Y565AJM5Vs0sjGDcXbzphc";
@@ -28,6 +25,7 @@ if ($gateway === 'mpesa') {
     $businessShortCode = "6280635";
     $passkey           = "75fc730afea19a3765dffb3465daa94fa1cb19668476ed2acefad1045a57c3a1";
 
+    // Reformat phone format neatly to match strict Safaricom expectations (2547...)
     $phone = preg_replace('/[^0-9]/', '', $_POST['phone']);
     if (substr($phone, 0, 1) === '0') {
         $phone = '254' . substr($phone, 1);
@@ -67,7 +65,7 @@ if ($gateway === 'mpesa') {
     $password    = base64_encode($businessShortCode . $passkey . $timestamp);
 
     $queryUrl = "https://safaricom.co.ke";
-    $checkoutRequestID = "ws_CO_08102026150740123456"; 
+    $checkoutRequestID = "ws_CO_08102026150740123456"; // Swap dynamically with your actual checkout request ID variable
 
     $payload = array(
         "BusinessShortCode" => $businessShortCode,
@@ -94,117 +92,6 @@ if ($gateway === 'mpesa') {
     echo "<h3>M-Pesa STK Query Response:</h3>";
     echo "<pre>" . htmlspecialchars($queryResponse) . "</pre>";
     exit;
-}
-
-// =================================================================
-// CHANNEL 2: FLUTTERWAVE CREDIT & DEBIT CARD HANDLER
-// =================================================================
-if ($gateway === 'card') {
-    if ($amount < 5) { 
-        die("Minimum Card transaction amount is $5 USD."); 
-    }
-    
-    $endpoint = "https://flutterwave.com";
-    $cardPayload = [
-        "tx_ref" => $txRef,
-        "amount" => $amount,
-        "currency" => "USD",
-        "redirect_url" => "https://" . $_SERVER['HTTP_HOST'] . "/payment-callback.php?gateway=flutterwave",
-        "customer" => [
-            "email" => $userEmail,
-            "name" => $userName
-        ],
-        "customizations" => [
-            "title" => "Odynasties Project Support",
-            "description" => "Global Infrastructure & Emergency Blood Dispatch Funding"
-        ]
-    ];
-
-    $ch = curl_init($endpoint);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Authorization: Bearer ' . FLW_SECRET_KEY, 
-        'Content-Type: application/json'
-    ]);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($cardPayload));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    
-    $response = curl_exec($ch);
-    curl_close($ch);
-    
-    $result = json_decode($response);
-    if ($result && $result->status === 'success') {
-        header("Location: " . $result->data->link);
-        exit;
-    } else {
-        die("Flutterwave Processing Error: " . ($result->message ?? 'Gateway timeout. Please try again.'));
-    }
-}
-
-// =================================================================
-// CHANNEL 3: PAYPAL DIGITAL WALLET CHECKOUT HANDLER
-// =================================================================
-if ($gateway === 'paypal') {
-    if ($amount < 5) { 
-        die("Minimum PayPal transaction amount is $5 USD."); 
-    }
-    
-    $authUrl = "https://paypal.com";
-    $authCh = curl_init($authUrl);
-    curl_setopt($authCh, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($authCh, CURLOPT_USERPWD, PAYPAL_CLIENT_ID . ":" . PAYPAL_CLIENT_SECRET); 
-    curl_setopt($authCh, CURLOPT_POSTFIELDS, "grant_type=client_credentials");
-    curl_setopt($authCh, CURLOPT_SSL_VERIFYPEER, false);
-    
-    $authResponse = json_decode(curl_exec($authCh));
-    curl_close($authCh);
-    
-    // Using associative array reference to completely eliminate 'access_token' object identification parse issues
-    $payKey = isset($authResponse->access_token) ? $authResponse->access_token : null;
-    if (!$payKey) { 
-        die("PayPal Authentication Timeout. Could not establish handshake connection."); 
-    }
-
-    $orderUrl = "https://paypal.com";
-    $orderData = [
-        "intent" => "CAPTURE",
-        "purchase_units" => [[
-            "reference_id" => $txRef,
-            "amount" => [
-                "currency_code" => "USD",
-                "value" => number_format($amount, 2, '.', '')
-            ],
-            "description" => "Odynasties Project Infrastructure Support"
-        ]],
-        "application_context" => [
-            "return_url" => "https://" . $_SERVER['HTTP_HOST'] . "/payment-callback.php?gateway=paypal&status=success",
-            "cancel_url" => "https://" . $_SERVER['HTTP_HOST'] . "/support.php"
-        ]
-    ];
-
-    $ch = curl_init($orderUrl);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        "Authorization: Bearer " . $payKey,
-        "Content-Type: application/json"
-    ]);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($orderData));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    
-    $orderResponse = json_decode(curl_exec($ch));
-    curl_close($ch);
-
-    if (isset($orderResponse->links)) {
-        foreach ($orderResponse->links as $link) {
-            if ($link->rel === 'approve') {
-                header("Location: " . $link->href);
-                exit;
-            }
-        }
-    }
-    die("PayPal Order Routing Failure. System halted.");
 }
 
 die("Fatal execution error. Untracked payment option processed.");
