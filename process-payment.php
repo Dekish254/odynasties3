@@ -17,7 +17,7 @@ $gateway = isset($_POST['gateway']) ? trim($_POST['gateway']) : '';
 $amount = isset($_POST['amount']) ? floatval($_POST['amount']) : 0; 
 
 // ================================================================= 
-// MAIN HANDLER 1: SAFARICOM M-PESA GATEWAY (LIVE INITIATION)
+// MAIN HANDLER 1: SAFARICOM M-PESA GATEWAY (LIVE PRODUCTION INITIATION)
 // ================================================================= 
 if ($gateway === 'mpesa') { 
     $consumerKey       = "bFuQg4fqHajr7VrG1umNX1XR63Y565AJM5Vs0sjGDcXbzphc"; 
@@ -33,8 +33,8 @@ if ($gateway === 'mpesa') {
         $phone = '254' . $phone; 
     } 
 
-      // Live Production Token Endpoint
-    $tokenUrl = "https://" . "api" . "." . "safaricom" . "." . "co" . "." . "ke" . "/oauth/v1/generate?grant_type=client_credentials"; 
+    // 1. GENERATE PRODUCTION OAUTH ACCESS TOKEN
+    $tokenUrl = "https://safaricom.co.ke"; 
     
     // Explicitly clean up credentials and build a standard HTTP Basic Auth header string
     $cleanKey = trim($consumerKey);
@@ -57,11 +57,22 @@ if ($gateway === 'mpesa') {
     
     $tokenResult = json_decode($tokenResponse); 
 
+    if ($httpCode !== 200 || !isset($tokenResult->access_token)) { 
+        echo "<h3>Server Diagnosis:</h3>"; 
+        echo "HTTP Status Code Received: <b>" . $httpCode . "</b><br>"; 
+        echo "Raw response from Safaricom: <pre>" . htmlspecialchars($tokenResponse) . "</pre>"; 
+        die("Stopping execution because no access token was generated."); 
+    } 
+
+    // Bind token data arrays cleanly over application flow
+    $accessToken = $tokenResult->access_token; 
+    $timestamp = date('YmdHis'); 
+    $password = base64_encode($businessShortCode . $passkey . $timestamp); 
+
     // 2. INITIATE LIVE STK PUSH (LIPA NA M-PESA ONLINE EXPRESS)
-    // Concatenated to target the proper live processrequest production endpoint
-    $stkPushUrl = "https://" . "api" . "." . "safaricom" . "." . "co" . "." . "ke" . "/mpesa/stkpush/v1/processrequest"; 
+    $stkPushUrl = "https://safaricom.co.ke"; 
     
-    // Replace with your actual live domain where you plan to process callback logs
+    // Replace with your actual live domain handling instant payment logs
     $callbackUrl = "https://yourdomain.com"; 
 
     $payload = array(
