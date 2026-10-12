@@ -19,26 +19,27 @@ require 'includes/header.php';
 /* Core Gateway Selection Grid layout */
 .gateway-grid {display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-top: 30px;}
 .gateway-card {background: #fff; border: 1px solid #e1e8eb; border-radius: 16px; padding: 28px; box-shadow: 0 8px 24px rgba(12,31,41,.04); display: flex; flex-direction: column; transition: transform 0.2s ease, border-color 0.2s ease;}
-.gateway-card:hover {transform: translateY(-2px); border-color: #26a269;}
+.gateway-card:hover {transform: translateY(-2px); border-color: #49b848;}
 
 .gateway-badge {display: inline-block; padding: 4px 10px; font-size: 11px; font-weight: 700; text-transform: uppercase; border-radius: 4px; margin-bottom: 15px; align-self: flex-start;}
-.badge-mpesa {background: #eef7f1; color: #26a269;}
-.badge-intl {background: #fff6ee; color: #dd6b20;}
+.badge-mpesa {background: #eef7f1; color: #49b848;}
+.badge-intl {background: #f7fafc; color: #4a5568;}
 
 .gateway-card h2 {margin: 0 0 10px 0; font-size: 22px; color: #182932;}
 .gateway-card p {color: #52636c; font-size: 14px; line-height: 1.6; margin: 0 0 20px 0; flex: 1;}
 
 /* Input Form adjustments within gateway structures */
 .amount-input-group {display: flex; gap: 10px; margin-bottom: 15px;}
-.amount-input-group input {flex: 1; padding: 11px; border: 1px solid #ced6da; border-radius: 8px; font-size: 14px; outline: none;}
-.amount-input-group input:focus {border-color: #26a269;}
+.amount-input-group input {flex: 1; padding: 11px; border: 1px solid #ced6da; border-radius: 8px; font-size: 14px; outline: none; color: #182932;}
+.amount-input-group input:focus {border-color: #49b848;}
 .pay-submit-btn {width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: 700; font-size: 14px; cursor: pointer; text-align: center; text-decoration: none; transition: background 0.2s ease;}
 
-.btn-mpesa {background: #e2e8f0; color: #718096; cursor: not-allowed;} /* Styled to look grayed out */
-.btn-intl {background: #dd6b20; color: #fff;} .btn-intl:hover {background: #b85619;}
+.btn-mpesa {background: #49b848; color: #fff;} 
+.btn-mpesa:hover {background: #379a36;}
+.btn-intl {background: #4a5568; color: #fff;} 
+.btn-intl:hover {background: #2d3748;}
 
-/* Maintenance Alert Box Styling */
-.maintenance-banner {background: #fffaf0; border: 1px solid #feebc8; border-radius: 8px; padding: 12px; margin-bottom: 15px; font-size: 13px; color: #c05621; display: flex; gap: 8px; align-items: flex-start;}
+.help-text {display: block; font-size: 11px; color: #718096; margin-top: -10px; margin-bottom: 15px; padding-left: 2px;}
 
 @media(max-width: 768px) {
   .gateway-grid {grid-template-columns: 1fr;}
@@ -53,58 +54,63 @@ require 'includes/header.php';
 
   <div class="gateway-grid">
     
-    <!-- Option 1: Mobile Money Gateway (M-Pesa Integration) - UNDER MAINTENANCE -->
-    <div class="gateway-card" style="opacity: 0.85;">
-      <span class="gateway-badge badge-mpesa" style="background:#edf2f7; color:#4a5568;">Temporarily Offline</span>
+    <!-- Option 1: Mobile Money Gateway (M-Pesa Integration) - RESTORED ACTIVE -->
+    <div class="gateway-card" style="border-color: #49b848; box-shadow: 0 8px 24px rgba(73,184,72,.06);">
+      <span class="gateway-badge badge-mpesa">Official Gateway</span>
       <h2>M-Pesa STK Push</h2>
       <p>Instant transactional processing using your mobile phone. Triggers an automated secure STK PIN request prompt window directly on your handset screen.</p>
       
-      <!-- Maintenance Alert Info -->
-      <div class="maintenance-banner">
-        <span>⚠️</span>
-        <span><strong>Gateway Maintenance:</strong> We are running a scheduled secure profiling update with Safaricom networks. Please utilize the Crypto checkout below in the interim.</span>
-      </div>
+      <form action="process_payment.php" method="POST" id="mpesaPaymentForm">
+        <!-- Secure Anti-CSRF Parameters passed over context -->
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+        <input type="hidden" name="gateway" value="mpesa">
 
-      <form onsubmit="return false;">
         <div class="amount-input-group">
-          <input type="number" placeholder="Amount (KES)" disabled>
-          <input type="tel" placeholder="07XXXXXXXX" disabled>
+          <input 
+            type="number" 
+            name="amount" 
+            placeholder="Amount (KES)" 
+            min="1" 
+            max="300000" 
+            required
+          >
+          <input 
+            type="tel" 
+            name="phone" 
+            placeholder="07XXXXXXXX" 
+            pattern="^(?:254|\+254|0)?(7|1)[0-9]{8}$"
+            title="Please enter a valid Kenyan number (e.g. 0712345678)" 
+            required
+          >
         </div>
-        <button type="button" class="pay-submit-btn btn-mpesa" disabled>M-Pesa Gateway Offline</button>
+        <span class="help-text">Accepts Safaricom 07XX... and 01XX... lines natively.</span>
+        
+        <button type="submit" class="pay-submit-btn btn-mpesa" id="mpesaSubmitBtn">Initiate STK Payment</button>
       </form>
     </div>
 
-    <!-- Option 2: Alternative Crypto Gateway - FULLY ACTIVE -->
-    <div class="gateway-card" style="border-color: #dd6b20; box-shadow: 0 8px 24px rgba(221,107,32,.06);">
-      <span class="gateway-badge badge-intl">Alternative Currency</span>
-      <h2>Crypto Network</h2>
-      <p>Decentralized project tracking via digital asset ledgers. Generates standard public destination keys for safe routing across Bitcoin, Ethereum, and USDT channels.</p>
-      
-      <div class="amount-input-group">
-        <input type="text" value="USDT (TRC20): TR7NHqjeKQxGTCi8q8DE4G6Z..." readonly style="background: #f7fafb; cursor: text; font-size:12px;">
-      </div>
-      <a href="contact.php?intent=crypto_invoice" class="pay-submit-btn btn-intl" style="text-decoration:none; display:block;">Request Invoice Wallet</a>
-    </div>
-
-  </div>
-</div>
-
-<?php require 'includes/footer.php'; ?>
-
-
-    <!-- Option 2: Alternative Crypto Gateway -->
+    <!-- Option 2: Secure Assistance / Custom Invoice Gateway -->
     <div class="gateway-card">
-      <span class="gateway-badge badge-intl">Alternative Currency</span>
-      <h2>Crypto Network</h2>
-      <p>Decentralized project tracking via digital asset ledgers. Generates standard public destination keys for safe routing across Bitcoin, Ethereum, and USDT channels.</p>
+      <span class="gateway-badge badge-intl">Direct Queries</span>
+      <h2>Alternative Payments</h2>
+      <p>Need assistance or looking to support the project through alternative payment channels, custom invoices, corporate sponsorships, or direct wire transfers?</p>
       
-      <div class="amount-input-group">
-        <input type="text" value="USDT (TRC20): TR7NHqjeKQxGTCi8q8DE4G6Z..." readonly style="background: #f7fafb; cursor: text; font-size:12px;">
-      </div>
-      <a href="contact.php?intent=crypto_invoice" class="pay-submit-btn btn-intl" style="background:#4a5568; color:#fff; text-align:center; text-decoration:none; display:block;">Request Invoice Wallet</a>
+      <div style="flex: 1;"></div> <!-- Spacer pushing action button uniformly -->
+      <a href="contact.php?intent=custom_invoice" class="pay-submit-btn btn-intl">Contact Billing Desk</a>
     </div>
 
   </div>
 </div>
+
+<script>
+    // Standard UI listener protecting backend from overlapping parallel payment requests
+    document.getElementById('mpesaPaymentForm').addEventListener('submit', function() {
+        const targetBtn = document.getElementById('mpesaSubmitBtn');
+        targetBtn.disabled = true;
+        targetBtn.innerText = 'Requesting PIN Prompt...';
+        targetBtn.style.background = '#a0aec0';
+        targetBtn.style.cursor = 'not-allowed';
+    });
+</script>
 
 <?php require 'includes/footer.php'; ?>
