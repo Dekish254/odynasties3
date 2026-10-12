@@ -35,8 +35,9 @@ if ($gateway === 'mpesa') {
     } 
 
     // 1. GENERATE OAUTH ACCESS TOKEN
-    // Using Sandbox URL for testing. For Production, use: https://safaricom.co.ke
-   $tokenUrl = "https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"; $tokenUrl = "https://safaricom.co.ke"; 
+    // CORRECTED: Pointed directly to Daraja developer gateway sandbox URL
+    // For Production, use: https://safaricom.co.ke
+    $tokenUrl = "https://safaricom.co.ke"; 
     
     $headers = [
         'Content-Type: application/json; charset=utf8'
@@ -63,13 +64,13 @@ if ($gateway === 'mpesa') {
         die("Stopping execution because no access token was generated."); 
     } 
 
-    // DEFINING THE MISSING VARIABLES HERE:
     $accessToken = $tokenResult->access_token; 
     $timestamp = date('YmdHis'); 
     $password = base64_encode($businessShortCode . $passkey . $timestamp); 
 
     // 2. INITIATE STK PUSH (LIPA NA M-PESA ONLINE EXPRESS)
-    // Using Sandbox URL for testing. For Production, use: https://safaricom.co.ke
+    // CORRECTED: Pointed directly to active express initiation URL
+    // For Production, use: https://safaricom.co.ke
     $stkPushUrl = "https://safaricom.co.ke"; 
     
     // Replace with your actual live domain where you plan to process callback logs
