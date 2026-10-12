@@ -38,7 +38,7 @@ if ($gateway === 'mpesa') {
     // 1. GENERATE OAUTH ACCESS TOKEN
     // FIXED: Swapped out placeholder domain for the active sandbox endpoint
     // For Production, use: https://safaricom.co.ke
-    $tokenUrl = "https://safaricom.co.ke"; 
+   $tokenUrl = "https://safaricom.co.ke";
     
     $curl = curl_init($tokenUrl); 
     curl_setopt($curl, CURLOPT_HTTPHEADER, [ 
@@ -70,7 +70,7 @@ if ($gateway === 'mpesa') {
     // 2. INITIATE STK PUSH (LIPA NA M-PESA ONLINE EXPRESS)
     // FIXED: Pointed to the valid functional M-Pesa express processrequest address
     // For Production, use: https://safaricom.co.ke
-    $stkPushUrl = "https://safaricom.co.ke"; 
+   $stkPushUrl = "https://safaricom.co.ke";
     
     // TODO: Replace with your actual live server callback URL handling the Daraja JSON response
     $callbackUrl = "https://yourdomain.com"; 
