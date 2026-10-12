@@ -35,18 +35,21 @@ if ($gateway === 'mpesa') {
         $phone = '254' . $phone; 
     } 
 
-    // 1. GENERATE OAUTH ACCESS TOKEN
-    // FIXED: Swapped out placeholder domain for the active sandbox endpoint
-    // For Production, use: https://safaricom.co.ke
-  $tokenUrl = "https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"; 
+        // 1. GENERATE OAUTH ACCESS TOKEN
+    // For Sandbox testing use: https://safaricom.co.ke
+    // For Production use: https://safaricom.co.ke
+    $tokenUrl = "https://safaricom.co.ke"; 
     
+    $headers = [
+        'Content-Type: application/json; charset=utf8'
+    ];
+
     $curl = curl_init($tokenUrl); 
-    curl_setopt($curl, CURLOPT_HTTPHEADER, [ 
-        'Content-Type: application/json'
-    ]); 
+    curl_setopt($curl, CURLOPT_HTTPHEADER, $headers); 
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true); 
-    curl_setopt($curl, CURLOPT_USERPWD, $consumerKey . ":" . $consumerSecret); 
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); // Set to true in production with proper certificates
+    // Securely passes credentials via standard Basic Authentication
+    curl_setopt($curl, CURLOPT_USERPWD, trim($consumerKey) . ":" . trim($consumerSecret)); 
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); // Set to true in production with valid certs
     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false); 
     curl_setopt($curl, CURLOPT_TIMEOUT, 15); 
     
@@ -56,16 +59,6 @@ if ($gateway === 'mpesa') {
     
     $tokenResult = json_decode($tokenResponse); 
 
-    if ($httpCode !== 200 || !isset($tokenResult->access_token)) { 
-        echo "<h3>Server Diagnosis:</h3>"; 
-        echo "HTTP Status Code Received: <b>" . $httpCode . "</b><br>"; 
-        echo "Raw response from Safaricom: <pre>" . htmlspecialchars($tokenResponse) . "</pre>"; 
-        die("Stopping execution because no access token was generated."); 
-    } 
-
-    $accessToken = $tokenResult->access_token; 
-    $timestamp = date('YmdHis'); 
-    $password = base64_encode($businessShortCode . $passkey . $timestamp); 
 
     // 2. INITIATE STK PUSH (LIPA NA M-PESA ONLINE EXPRESS)
     // FIXED: Pointed to the valid functional M-Pesa express processrequest address
