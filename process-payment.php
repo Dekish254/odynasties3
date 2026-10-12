@@ -35,7 +35,7 @@ if ($gateway === 'mpesa') {
 
     // 1. GENERATE PRODUCTION OAUTH ACCESS TOKEN
     // FIXED: Swapped out placeholder text with active live generation gateway
-   $tokenUrl = "https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
+   $tokenUrl = "https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials";
         $headers = [
         'Content-Type: application/json; charset=utf8'
     ];
@@ -67,7 +67,7 @@ if ($gateway === 'mpesa') {
 
     // 2. INITIATE LIVE STK PUSH (LIPA NA M-PESA ONLINE EXPRESS)
     // FIXED: Target actual live process request pipeline routing
-   $stkPushUrl="https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
+   $stkPushUrl="https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest";
     
     // TODO: Update this parameter with the URL to your live script managing instant payment logs
     $callbackUrl = "https://yourdomain.com"; 
