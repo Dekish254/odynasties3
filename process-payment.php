@@ -33,18 +33,20 @@ if ($gateway === 'mpesa') {
         $phone = '254' . $phone; 
     } 
 
-    // 1. GENERATE PRODUCTION OAUTH ACCESS TOKEN
-    // Concatenated to prevent link filtering from rewriting the true API gateway URL
+      // Live Production Token Endpoint
     $tokenUrl = "https://" . "api" . "." . "safaricom" . "." . "co" . "." . "ke" . "/oauth/v1/generate?grant_type=client_credentials"; 
     
-    $headers = [
-        'Content-Type: application/json; charset=utf8'
-    ];
+    // Explicitly clean up credentials and build a standard HTTP Basic Auth header string
+    $cleanKey = trim($consumerKey);
+    $cleanSecret = trim($consumerSecret);
+    $authCredentials = base64_encode($cleanKey . ":" . $cleanSecret);
 
     $curl = curl_init($tokenUrl); 
-    curl_setopt($curl, CURLOPT_HTTPHEADER, $headers); 
+    curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+        'Authorization: Basic ' . $authCredentials,
+        'Content-Type: application/json; charset=utf-8'
+    )); 
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true); 
-    curl_setopt($curl, CURLOPT_USERPWD, trim($consumerKey) . ":" . trim($consumerSecret)); 
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true); 
     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2); 
     curl_setopt($curl, CURLOPT_TIMEOUT, 15); 
@@ -54,17 +56,6 @@ if ($gateway === 'mpesa') {
     curl_close($curl); 
     
     $tokenResult = json_decode($tokenResponse); 
-
-    if ($httpCode !== 200 || !isset($tokenResult->access_token)) { 
-        echo "<h3>Server Diagnosis:</h3>"; 
-        echo "HTTP Status Code Received: <b>" . $httpCode . "</b><br>"; 
-        echo "Raw response from Safaricom: <pre>" . htmlspecialchars($tokenResponse) . "</pre>"; 
-        die("Stopping execution because no access token was generated."); 
-    } 
-
-    $accessToken = $tokenResult->access_token; 
-    $timestamp = date('YmdHis'); 
-    $password = base64_encode($businessShortCode . $passkey . $timestamp); 
 
     // 2. INITIATE LIVE STK PUSH (LIPA NA M-PESA ONLINE EXPRESS)
     // Concatenated to target the proper live processrequest production endpoint
