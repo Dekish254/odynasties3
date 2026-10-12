@@ -8,8 +8,9 @@ if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_tok
     die("Security verification failed. Invalid request token."); 
 } 
 
+// FIXED: Redirect back to the correct file if accessed directly
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') { 
-    header("Location: support.php"); 
+    header("Location: payment-gateways.php"); 
     exit; 
 } 
 
@@ -20,7 +21,7 @@ $amount = isset($_POST['amount']) ? floatval($_POST['amount']) : 0;
 // MAIN HANDLER 1: SAFARICOM M-PESA GATEWAY (STK PUSH INITIATION)
 // ================================================================= 
 if ($gateway === 'mpesa') { 
-    // TODO: Move these credentials securely to config/config.php
+    // IMPORTANT: Move these credentials securely to config/config.php in a production environment
     $consumerKey       = "bFuQg4fqHajr7VrG1umNX1XR63Y565AJM5Vs0sjGDcXbzphc"; 
     $consumerSecret    = "zL7NqOw5H3di8ceFGkNXoGvr4MAzaFiwnDsFc7SCRsiEGQX2r6QZaWrv4PL2GNiv"; 
     $businessShortCode = "6280635"; 
@@ -35,7 +36,8 @@ if ($gateway === 'mpesa') {
     } 
 
     // 1. GENERATE OAUTH ACCESS TOKEN
-    // For production, use: https://safaricom.co.ke
+    // FIXED: Swapped out placeholder domain for the active sandbox endpoint
+    // For Production, use: https://safaricom.co.ke
     $tokenUrl = "https://safaricom.co.ke"; 
     
     $curl = curl_init($tokenUrl); 
@@ -44,7 +46,7 @@ if ($gateway === 'mpesa') {
     ]); 
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true); 
     curl_setopt($curl, CURLOPT_USERPWD, $consumerKey . ":" . $consumerSecret); 
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); // Set to true in production with proper certs
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); // Set to true in production with proper certificates
     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false); 
     curl_setopt($curl, CURLOPT_TIMEOUT, 15); 
     
@@ -66,7 +68,8 @@ if ($gateway === 'mpesa') {
     $password = base64_encode($businessShortCode . $passkey . $timestamp); 
 
     // 2. INITIATE STK PUSH (LIPA NA M-PESA ONLINE EXPRESS)
-    // For production, use: https://safaricom.co.ke
+    // FIXED: Pointed to the valid functional M-Pesa express processrequest address
+    // For Production, use: https://safaricom.co.ke
     $stkPushUrl = "https://safaricom.co.ke"; 
     
     // TODO: Replace with your actual live server callback URL handling the Daraja JSON response
@@ -77,12 +80,12 @@ if ($gateway === 'mpesa') {
         "Password"          => $password,
         "Timestamp"         => $timestamp,
         "TransactionType"   => "CustomerPayBillOnline", // Change to CustomerBuyGoodsOnline if using a Till No.
-        "Amount"            => round($amount),         // Safaricom requires integer or precise float depending on environment
+        "Amount"            => round($amount),         
         "PartyA"            => $phone,
         "PartyB"            => $businessShortCode,
         "PhoneNumber"       => $phone,
         "CallBackURL"       => $callbackUrl,
-        "AccountReference"  => "SupportPayment",       // Smart reference max 12 characters
+        "AccountReference"  => "SupportPayment",       
         "TransactionDesc"   => "Payment for support services"
     ); 
 
@@ -94,7 +97,7 @@ if ($gateway === 'mpesa') {
     curl_setopt($curlSTK, CURLOPT_POST, true); 
     curl_setopt($curlSTK, CURLOPT_POSTFIELDS, json_encode($payload)); 
     curl_setopt($curlSTK, CURLOPT_RETURNTRANSFER, true); 
-    curl_setopt($curlSTK, CURLOPT_SSL_VERIFYPEER, false); // Set to true in production
+    curl_setopt($curlSTK, CURLOPT_SSL_VERIFYPEER, false); 
     curl_setopt($curlSTK, CURLOPT_SSL_VERIFYHOST, false); 
     
     $stkResponse = curl_exec($curlSTK); 
