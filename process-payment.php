@@ -36,7 +36,7 @@ if ($gateway === 'mpesa') {
 
     // 1. GENERATE OAUTH ACCESS TOKEN
     // Using Sandbox URL for testing. For Production, use: https://safaricom.co.ke
-    $tokenUrl = "https://safaricom.co.ke"; 
+   $tokenUrl = "https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"; $tokenUrl = "https://safaricom.co.ke"; 
     
     $headers = [
         'Content-Type: application/json; charset=utf8'
